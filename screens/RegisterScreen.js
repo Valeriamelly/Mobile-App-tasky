@@ -30,10 +30,8 @@ const RegisterScreen = () => {
       password: password,
     };
   
-  
-  //enviar una solicitud al backend api
   axios
-      .post("http://localhost:8000/register", user) 
+      .post("http://192.168.1.5:8000/register", user) 
       .then((response) => {
         console.log(response);
         Alert.alert(
@@ -49,10 +47,10 @@ const RegisterScreen = () => {
           "Error al registrarse",
           "Un error ocurrió mientras se registraba"
         );
-        console.log("registro fallido", error.message);
+        console.log("registro fallido", error);
       });
   };
-
+  
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
@@ -76,7 +74,7 @@ const RegisterScreen = () => {
               color: "#041E42",
             }}
           >
-            Register to your Account
+            Registra tu cuenta
           </Text>
         </View>
 

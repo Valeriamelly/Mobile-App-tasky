@@ -107,9 +107,40 @@ app.get("/verify/:token", async (req, res) => {
 
         await user.save();
 
-
         res.status(200).json({ message: "Email verificado exitosamente" });
     } catch (error) {
         res.status(500).json({ message: "Verificación del email fallida" });
     }
 });
+
+const generateSecretKey = () => {
+    const secretKey = crypto.randomBytes(32).toString("hex");
+
+    return secretKey;
+}
+
+const secretKey = generateSecretKey();
+
+app.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      //chequear si el usuario existe
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(401).json({ message: "Email o contraseña inválida" });
+      }
+  
+      //chequear si la contraseña es correcta 
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Contraseña inválida" });
+      }
+  
+      //generate a token
+      const token = jwt.sign({ userId: user._id }, secretKey);
+  
+      res.status(200).json({ token });
+    } catch (error) {
+      res.status(500).json({ message: "Login Failed" });
+    }
+  });

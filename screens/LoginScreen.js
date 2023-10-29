@@ -7,16 +7,40 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const handleLogin = () => {
+    const user = {
+      email: email,
+      password: password,
+    };
+
+    axios
+      .post("http://192.168.1.5:8000/login", user)
+      .then((response) => {
+        console.log(response);
+        const token = response.data.token;
+        AsyncStorage.setItem("authToken", token);
+        navigation.replace("Home");
+      })
+      .catch((error) => {
+        Alert.alert("Error en Login", "Email inválido");
+        console.log(error);
+      });
+  };
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
@@ -110,7 +134,7 @@ const LoginScreen = () => {
             />
           </View>
         </View>
-        
+
         <View
           style={{
             marginTop: 12,
@@ -129,7 +153,8 @@ const LoginScreen = () => {
         <View style={{ marginTop: 80 }} />
 
         <Pressable
-           style={{
+          onPress={handleLogin}
+          style={{
             width: 200,
             backgroundColor: "#FEBE10",
             borderRadius: 6,
@@ -148,14 +173,15 @@ const LoginScreen = () => {
           >
             Iniciar Sesión
           </Text>
-
         </Pressable>
-        <Pressable onPress={() => navigation.navigate("Register")} style={{marginTop:15}}>
-            <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-              No tienes cuenta? Regístrate
-            </Text>
+        <Pressable
+          onPress={() => navigation.navigate("Register")}
+          style={{ marginTop: 15 }}
+        >
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+            No tienes cuenta? Regístrate
+          </Text>
         </Pressable>
-
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
