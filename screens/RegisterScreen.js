@@ -57,9 +57,9 @@ const RegisterScreen = () => {
     >
       <View>
         <Image
-          style={{ width: 150, height: 100 }}
+          style={{ width: 170, height: 100 }}
           source={{
-            uri: "https://assets.stickpng.com/thumbs/6160562276000b00045a7d97.png",
+            uri: "https://info.cegedim-healthcare.co.uk/hubfs/CHS_Tasks%20logo.png",
           }}
         />
       </View>

@@ -5,9 +5,75 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
+  const Tab = createBottomTabNavigator();
+  
+  function BottomTabs() {
+    return (
+      <Tab.Navigator>
+        <Tab.Screen 
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: "Home",
+            tabBarLabelStyle: {color:"#008E97"},
+            headerShown: false,
+            tabBarIcon: ({focused}) => 
+            focused ? (
+              <Entypo name="home" size={30} color="#008E97" />
+              
+            ) : (
+              <AntDesign name="home" size={30} color="black" />
+            ),
+          }}
+        />
+        <Tab.Screen 
+          name="Project"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: "Project",
+            tabBarLabelStyle: {color:"#008E97"},
+            headerShown: false,
+            tabBarIcon: ({focused}) => 
+            focused ? (
+              <FontAwesome5 name="tasks" size={30} color="#008E97" />
+              
+            ) : (
+              <FontAwesome5 name="tasks" size={30} color="black" />
+            ),
+          }}
+        />
+        <Tab.Screen 
+          name="Profile"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: "Profile",
+            tabBarLabelStyle: {color:"#008E97"},
+            headerShown: false,
+            tabBarIcon: ({focused}) => 
+            focused ? (
+              <MaterialIcons name="person" size={30} color="#008E97" />
+              
+            ) : (
+              <Ionicons name="person-outline" size={30} color="black" />
+            ),
+          }}
+        />
+        
+          
+      </Tab.Navigator>
+
+    );
+  }
+   
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -22,8 +88,8 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
+          name="Main"
+          component={BottomTabs}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
