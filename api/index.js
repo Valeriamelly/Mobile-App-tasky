@@ -130,10 +130,15 @@ app.post("/login", async (req, res) => {
       if (!user) {
         return res.status(401).json({ message: "Email o contraseña inválida" });
       }
-  
+
       //chequear si la contraseña es correcta 
       if (user.password !== password) {
         return res.status(401).json({ message: "Contraseña inválida" });
+      }
+      
+      //se chequea si el correo está verificado
+      if (!user.verified) {
+        return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión"});
       }
   
       //generate a token
@@ -141,6 +146,6 @@ app.post("/login", async (req, res) => {
   
       res.status(200).json({ token });
     } catch (error) {
-      res.status(500).json({ message: "Login Failed" });
+      res.status(500).json({ error: "Login Failed" });
     }
   });

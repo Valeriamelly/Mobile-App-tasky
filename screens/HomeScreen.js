@@ -1,3 +1,53 @@
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+
+const HomeScreen = ({ navigation }) => {
+    const projects = [
+        { id: '1', name: 'Proyecto 1', descripcion: "Descripción: software desarrollo" },
+        { id: '2', name: 'Proyecto 2', descripcion: "Descripción: software desarrollo"  },
+        // ... otros proyectos
+    ];
+
+    const renderProject = ({ item }) => (
+        <TouchableOpacity
+            style={styles.projectItem}
+            onPress={() => navigation.navigate('Project', { projectId: item.id })}
+        >
+            <Text style={styles.projectTitle}>{item.name}</Text>
+            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <AntDesign name="edit" size={24} color="black" />
+        </TouchableOpacity>
+    );
+
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={projects}
+                keyExtractor={(item) => item.id}
+                renderItem={renderProject}
+            />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+    },
+    projectItem: {
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    projectTitle: {
+        fontSize: 18,
+    },
+});
+
+export default HomeScreen;
+/*
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
@@ -55,7 +105,7 @@ const HomeScreen = () => {
                 <View style={styles.tasksContainer}>
                     <View style={styles.header}>
                         <Text style={styles.projectTitle}>{selectedProject.name}</Text>
-                        <AntDesign name="edit" size={24} color="black" onPress={() => {/* Aquí iría la lógica para editar el nombre del proyecto */}} />
+                        <AntDesign name="edit" size={24} color="black" onPress={() => {}} />
                     </View>
 
                     <FlatList
@@ -73,7 +123,7 @@ const HomeScreen = () => {
                         }
                     />
 
-                    <TouchableOpacity style={styles.addButton} onPress={() => {/* Aquí iría la lógica para añadir una nueva tarea */}}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => {}}>
                         <Text style={styles.addButtonText}>Añadir Nueva Proyecto</Text>
                     </TouchableOpacity>
                 </View>
@@ -147,6 +197,11 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+
+
+
+*/
+
 
 
 /*import React, { useState } from 'react';

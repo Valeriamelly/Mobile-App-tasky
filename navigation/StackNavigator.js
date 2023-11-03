@@ -11,6 +11,8 @@ import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import ProjectScreen from "../screens/ProjectScreen";
+
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -37,7 +39,7 @@ const StackNavigator = () => {
         />
         <Tab.Screen 
           name="Project"
-          component={HomeScreen}
+          component={ProjectScreen} //antes ibas HomeScreen
           options={{
             tabBarLabel: "Project",
             tabBarLabelStyle: {color:"#008E97"},
@@ -92,6 +94,12 @@ const StackNavigator = () => {
           component={BottomTabs}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="ProjectScreen"
+          component={ProjectScreen}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
