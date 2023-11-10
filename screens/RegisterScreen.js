@@ -31,7 +31,7 @@ const RegisterScreen = () => {
     };
   
   axios
-      .post("http://192.168.1.5:8000/register", user) 
+      .post("http://192.168.1.8:8000/register", user) 
       .then((response) => {
         console.log(response);
         Alert.alert(
@@ -196,7 +196,7 @@ const RegisterScreen = () => {
         onPress={handleRegister}
           style={{
             width: 200,
-            backgroundColor: "#FEBE10",
+            backgroundColor: "#7743DB",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",

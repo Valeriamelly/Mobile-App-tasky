@@ -28,7 +28,7 @@ const LoginScreen = () => {
     };
 
     axios
-      .post("http://192.168.1.5:8000/login", user)
+      .post("http://192.168.1.8:8000/login", user)
       .then((response) => {
         console.log(response);
         const token = response.data.token;
@@ -65,7 +65,7 @@ const LoginScreen = () => {
               color: "#041E42",
             }}
           >
-            Login In to your Account
+            Inicia Sesión en tu Cuenta
           </Text>
         </View>
 
@@ -157,7 +157,7 @@ const LoginScreen = () => {
           onPress={handleLogin}
           style={{
             width: 200,
-            backgroundColor: "#FEBE10",
+            backgroundColor: "#7743DB",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",

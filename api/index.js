@@ -149,3 +149,20 @@ app.post("/login", async (req, res) => {
       res.status(500).json({ error: "Login Failed" });
     }
   });
+
+  app.post('/add-project', async (req, res) => {
+    try {
+        const { name, description } = req.body;
+
+        // Crear un nuevo proyecto
+        const newProject = new Project({ name, description });
+
+        // Guardar el proyecto en la base de datos
+        await newProject.save();
+
+        res.status(201).json({ message: 'Proyecto creado exitosamente', project: newProject });
+    } catch (error) {
+        console.error('Error al crear el proyecto:', error);
+        res.status(500).json({ message: 'Error al crear el proyecto' });
+    }
+});
