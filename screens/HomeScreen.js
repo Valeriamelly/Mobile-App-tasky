@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('Project', { projectId: item.id })}
         >
             <Text style={styles.projectTitle}>{item.name}</Text>
-            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <Text style={styles.projectDescription}>{item.description}</Text>
             <AntDesign name="edit" size={24} color="black" />
         </TouchableOpacity>
     );
@@ -91,6 +91,11 @@ const styles = StyleSheet.create({
     },
     projectTitle: {
         fontSize: 18,
+        fontWeight: 'bold',
+    },
+    projectDescription: {
+        fontSize: 14,
+        color: 'gray', // Elige un estilo que se ajuste a tu diseño
     },
     menuContainer: {
         position: 'absolute',
