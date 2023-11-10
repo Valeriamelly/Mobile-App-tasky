@@ -4,15 +4,19 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
 const ProjectScreen = ({ route }) => {
-    // Simulamos la obtención del ID del proyecto seleccionado
-    const { projectId } = route.params;
+    const { projectId } = route.params; // Asegúrate de que esta línea esté recogiendo el projectId correctamente
 
-    // Simulamos las tareas asociadas al proyecto seleccionado
     const tasks = [
-        { id: '1', name: 'Tarea 1', startDate: '2023-01-01', endDate: '2023-01-05' },
-        { id: '2', name: 'Tarea 2', startDate: '2023-01-06', endDate: '2023-01-10' },
+        { id: '1', projectId: '1', name: 'Tarea 1', startDate: '2023-01-01', endDate: '2023-01-05' },
+        { id: '2', projectId: '1', name: 'Tarea 2', startDate: '2023-01-06', endDate: '2023-01-10' },
+        { id: '3', projectId: '2', name: 'Tarea 1', startDate: '2023-01-11', endDate: '2023-01-15' },
+        { id: '4', projectId: '2', name: 'Tarea 2', startDate: '2023-01-06', endDate: '2023-01-10' },
+        { id: '5', projectId: '2', name: 'Tarea 3', startDate: '2023-01-11', endDate: '2023-01-15' },
         // ... otras tareas
     ];
+
+    // Filtrar las tareas para el proyecto seleccionado
+    const tasksForProject = tasks.filter(task => task.projectId === projectId);
 
     const renderTask = ({ item }) => (
         <View style={styles.taskCard}>
@@ -26,8 +30,9 @@ const ProjectScreen = ({ route }) => {
             <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
             <AntDesign name="edit" size={24} color="black" onPress={() => {}} />
             
+            {/* Utiliza tasksForProject en lugar de tasks */}
             <FlatList
-                data={tasks}
+                data={tasksForProject}
                 keyExtractor={(item) => item.id}
                 renderItem={renderTask}
             />
