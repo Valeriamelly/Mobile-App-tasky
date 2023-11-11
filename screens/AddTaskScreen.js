@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, DatePickerAndroid } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
+import DateTimePicker from '@react-native-community/datetimepicker'; // Asegúrate de tener esta dependencia instalada
 
 const AddTaskScreen = ({ navigation, route }) => {
-    const { projectId } = route.params; // Asume que se pasa el ID del proyecto como parámetro
+    const { projectId } = route.params;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
- 
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [showStartPicker, setShowStartPicker] = useState(false);
+    const [showEndPicker, setShowEndPicker] = useState(false);
 
     const handleSave = () => {
         const taskData = {
             name,
             description,
             projectId,
-           
+            startDate, // Asegúrate de formatear las fechas según lo esperado por tu backend
+            endDate
         };
 
         axios.post('http://192.168.18.50:8000/add-task', taskData)
@@ -24,6 +29,18 @@ const AddTaskScreen = ({ navigation, route }) => {
             .catch(error => {
                 console.error('Error al guardar la tarea:', error);
             });
+    };
+
+    const onChangeStart = (event, selectedDate) => {
+        const currentDate = selectedDate || startDate;
+        setShowStartPicker(false);
+        setStartDate(currentDate);
+    };
+
+    const onChangeEnd = (event, selectedDate) => {
+        const currentDate = selectedDate || endDate;
+        setShowEndPicker(false);
+        setEndDate(currentDate);
     };
 
     return (
@@ -45,12 +62,28 @@ const AddTaskScreen = ({ navigation, route }) => {
                 multiline
             />
 
-            {/* Aquí puedes agregar selectores de fecha para las fechas de inicio y fin */}
+            <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartPicker(true)} />
+            {showStartPicker && (
+                <DateTimePicker
+                    value={startDate}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeStart}
+                />
+            )}
 
-            <Button
-                title="Guardar Tarea"
-                onPress={handleSave}
-            />
+            <Button title="Seleccionar fecha de fin" onPress={() => setShowEndPicker(true)} />
+            {showEndPicker && (
+                <DateTimePicker
+                    value={endDate}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeEnd}
+                />
+            )}
+
+            <Button title="Guardar Tarea" onPress={handleSave} />
+
         </View>
     );
 };

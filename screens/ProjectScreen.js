@@ -1,38 +1,42 @@
 // ProjectScreen.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-
-const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
-    const { projectId } = route.params; // Extrae projectId de route.params
-    const [tasks, setTasks] = useState([]); // Estado para almacenar las tareas
+const ProjectScreen = ({ route, navigation }) => {
+    const { projectId } = route.params;
+    const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        // Reemplaza la URL con la ruta correcta de tu backend
         axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
             .then(response => {
-                setTasks(response.data); // Actualiza el estado con las tareas obtenidas
+                setTasks(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener las tareas:', error);
             });
-    }, [projectId]); 
+    }, [projectId]);
 
-    const renderTask = ({ item }) => (
-        <View style={styles.taskCard}>
-            <Text style={styles.taskName}>{item.name}</Text>
-            <Text style={styles.taskDescription}>{item.description}</Text>
-
-            {/* Puedes incluir o excluir fechas según tu modelo de tarea */}
-        </View>
-    );
+    const renderTask = ({ item }) => {
+        // Asegúrate de que las fechas sean válidas
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleDateString() : 'Sin fecha';
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleDateString() : 'Sin fecha';
+    
+        return (
+            <View style={styles.taskCard}>
+                <Text style={styles.taskName}>{item.name}</Text>
+                <Text style={styles.taskDescription}>{item.description}</Text>
+                <Text style={styles.taskDate}>Inicio: {formattedStartDate}</Text>
+                <Text style={styles.taskDate}>Fin: {formattedEndDate}</Text>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
-            <AntDesign name="edit" size={24} color="black" onPress={() => { }} />
+            <AntDesign name="edit" size={24} color="black" />
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item._id.toString()}
@@ -48,6 +52,10 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
 };
 
 const styles = StyleSheet.create({
+    taskDate: {
+        fontSize: 14,
+        color: 'grey', // Puedes ajustar el estilo según tus preferencias
+    },
     floatingButton: {
         backgroundColor: '#007bff', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón

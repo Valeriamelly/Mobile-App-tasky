@@ -1,33 +1,39 @@
+// HomeScreen.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
 const HomeScreen = ({ navigation }) => {
-    const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
-    const [menuVisible, setMenuVisible] = useState(false); // Estado para controlar la visibilidad del menú
+    const [projects, setProjects] = useState([]);
 
     useEffect(() => {
-        axios.get('http://192.168.18.50:8000/projects') // Asegúrate de que la URL sea correcta
+        axios.get('http://192.168.18.50:8000/projects')
             .then(response => {
-                setProjects(response.data); // Actualiza el estado con los proyectos obtenidos
+                setProjects(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener los proyectos:', error);
             });
-    }, []); // Array vacío para que se ejecute solo una vez al montar el componente
+    }, []);
 
-    const renderProject = ({ item }) => (
-        <TouchableOpacity
-            style={styles.projectItem}
-            onPress={() => navigation.navigate('Project', { projectId: item._id})}
-        >
-            <Text style={styles.projectTitle}>{item.name}</Text>
-            <Text style={styles.projectDescription}>{item.description}</Text>
-            <AntDesign name="edit" size={24} color="black" />
-        </TouchableOpacity>
-    );
+    const renderProject = ({ item }) => {
+        // Formatear las fechas para mostrarlas correctamente
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleDateString() : 'Sin fecha';
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleDateString() : 'Sin fecha';
 
+        return (
+            <TouchableOpacity
+                style={styles.projectItem}
+                onPress={() => navigation.navigate('Project', { projectId: item._id })}
+            >
+                <Text style={styles.projectTitle}>{item.name}</Text>
+                <Text style={styles.projectDescription}>{item.description}</Text>
+                <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>
+                <AntDesign name="edit" size={24} color="black" />
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -36,23 +42,10 @@ const HomeScreen = ({ navigation }) => {
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderProject}
             />
-            {menuVisible && (
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate('AddTask')}>
-                        <Text>Crear Tarea</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate('AddProject')}>
-                        <Text>Crear Proyecto</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+
 
             <TouchableOpacity
-                onPress={() => setMenuVisible(!menuVisible)}
+                onPress={() => navigation.navigate('AddProject')}
                 style={styles.floatingButton}>
                 <AntDesign name="plus" size={24} color="white" />
             </TouchableOpacity>
@@ -61,6 +54,10 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    projectDate: {
+        fontSize: 14,
+        color: 'grey',
+    },
     floatingButton: {
         backgroundColor: '#007bff', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón

@@ -172,21 +172,46 @@ app.post('/add-project', async (req, res) => {
 
 app.get('/projects', async (req, res) => {
     try {
-        const projects = await Project.find(); // Usa el modelo Project para obtener todos los proyectos
-        res.status(200).json(projects); // Envía los proyectos como respuesta
+        // Consulta agregada para obtener los proyectos con las fechas de inicio y fin
+        const projects = await Project.aggregate([
+            {
+                $lookup: {
+                    from: 'tasks', // Asegúrate de que el nombre de la colección sea correcto
+                    localField: '_id',
+                    foreignField: 'projectId',
+                    as: 'tasks'
+                }
+            },
+            {
+                $addFields: {
+                    startDate: { $min: "$tasks.startDate" },
+                    endDate: { $max: "$tasks.endDate" }
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    description: 1,
+                    startDate: 1,
+                    endDate: 1
+                }
+            }
+        ]);
+        res.status(200).json(projects);
     } catch (error) {
         console.error('Error al obtener los proyectos:', error);
         res.status(500).json({ message: 'Error al obtener los proyectos' });
     }
 });
 
+
 // Ruta para crear una nueva tarea
 app.post('/add-task', async (req, res) => {
     try {
-        const { name, description, projectId } = req.body;
+        const { name, description, projectId, startDate, endDate } = req.body;
 
-        // Crear una nueva tarea
-        const newTask = new Task({ name, description, projectId });
+        // Crear una nueva tarea con fechas de inicio y fin
+        const newTask = new Task({ name, description, projectId, startDate, endDate });
 
         // Guardar la tarea en la base de datos
         await newTask.save();
@@ -206,5 +231,22 @@ app.get('/projects/:projectId/tasks', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener las tareas:', error);
         res.status(500).json({ message: 'Error al obtener las tareas' });
+    }
+});
+
+app.post('/add-task', async (req, res) => {
+    try {
+        const { name, description, projectId, startDate, endDate } = req.body;
+
+        // Crear una nueva tarea con fechas de inicio y fin
+        const newTask = new Task({ name, description, projectId, startDate, endDate });
+
+        // Guardar la tarea en la base de datos
+        await newTask.save();
+
+        res.status(201).json({ message: 'Tarea creada exitosamente', task: newTask });
+    } catch (error) {
+        console.error('Error al crear la tarea:', error);
+        res.status(500).json({ message: 'Error al crear la tarea' });
     }
 });

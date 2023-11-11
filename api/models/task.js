@@ -14,8 +14,16 @@ const taskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',
         required: true
+    }, 
+    startDate: {
+        type: Date,
+        required: true
     },
-    
+    endDate: {
+        type: Date,
+        required: true
+    }
+
     // Puedes agregar más campos según sea necesario
 });
 
