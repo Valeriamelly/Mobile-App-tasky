@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
 import AddProjectScreen from "../screens/AddProjectScreen";
+import AddTaskScreen from "../screens/AddTaskScreen";
 
 
 const StackNavigator = () => {
@@ -106,6 +107,11 @@ const StackNavigator = () => {
           component={AddProjectScreen}
           options={{ headerShown: false}} // Configura las opciones según tus preferencias
         />
+        <Stack.Screen 
+        name="AddTask" 
+        component={AddTaskScreen} 
+        // Opciones adicionales como `options` si son necesarias
+      />
       </Stack.Navigator>
     </NavigationContainer>
   );

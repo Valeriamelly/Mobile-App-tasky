@@ -1,46 +1,72 @@
 // ProjectScreen.js
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-const ProjectScreen = ({ route }) => {
-    const { projectId } = route.params; // Asegúrate de que esta línea esté recogiendo el projectId correctamente
 
-    const tasks = [
-        { id: '1', projectId: '1', name: 'Tarea 1', startDate: '2023-01-01', endDate: '2023-01-05' },
-        { id: '2', projectId: '1', name: 'Tarea 2', startDate: '2023-01-06', endDate: '2023-01-10' },
-        { id: '3', projectId: '2', name: 'Tarea 1', startDate: '2023-01-11', endDate: '2023-01-15' },
-        { id: '4', projectId: '2', name: 'Tarea 2', startDate: '2023-01-06', endDate: '2023-01-10' },
-        { id: '5', projectId: '2', name: 'Tarea 3', startDate: '2023-01-11', endDate: '2023-01-15' },
-        // ... otras tareas
-    ];
+const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
+    const { projectId } = route.params; // Extrae projectId de route.params
+    const [tasks, setTasks] = useState([]); // Estado para almacenar las tareas
 
-    // Filtrar las tareas para el proyecto seleccionado
-    const tasksForProject = tasks.filter(task => task.projectId === projectId);
+    useEffect(() => {
+        // Reemplaza la URL con la ruta correcta de tu backend
+        axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
+            .then(response => {
+                setTasks(response.data); // Actualiza el estado con las tareas obtenidas
+            })
+            .catch(error => {
+                console.error('Error al obtener las tareas:', error);
+            });
+    }, [projectId]); 
 
     const renderTask = ({ item }) => (
         <View style={styles.taskCard}>
             <Text style={styles.taskName}>{item.name}</Text>
-            <Text style={styles.taskDate}>{item.startDate} - {item.endDate}</Text>
+            <Text style={styles.taskDescription}>{item.description}</Text>
+
+            {/* Puedes incluir o excluir fechas según tu modelo de tarea */}
         </View>
     );
 
     return (
         <View style={styles.container}>
             <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
-            <AntDesign name="edit" size={24} color="black" onPress={() => {}} />
-            
-            {/* Utiliza tasksForProject en lugar de tasks */}
+            <AntDesign name="edit" size={24} color="black" onPress={() => { }} />
             <FlatList
-                data={tasksForProject}
-                keyExtractor={(item) => item.id}
+                data={tasks}
+                keyExtractor={(item) => item._id.toString()}
                 renderItem={renderTask}
             />
+            <TouchableOpacity
+                onPress={() => navigation.navigate('AddTask', { projectId })}
+                style={styles.floatingButton}>
+                <AntDesign name="plus" size={24} color="white" />
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    floatingButton: {
+        backgroundColor: '#007bff', // Puedes elegir el color que prefieras
+        width: 56, // Tamaño del botón
+        height: 56,
+        borderRadius: 28, // Para hacerlo circular
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute', // Importante para posicionarlo sobre los demás elementos
+        bottom: 20, // Margen desde la parte inferior
+        right: 20, // Margen desde la parte derecha
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     container: {
         flex: 1,
         padding: 20,
@@ -63,6 +89,10 @@ const styles = StyleSheet.create({
     },
     taskName: {
         fontSize: 18,
+    },
+    taskDescription: {
+        fontSize: 16,
+        color: 'grey', // Ajusta los estilos según tus preferencias
     },
     taskDate: {
         color: 'gray',

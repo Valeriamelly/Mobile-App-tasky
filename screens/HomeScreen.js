@@ -20,7 +20,7 @@ const HomeScreen = ({ navigation }) => {
     const renderProject = ({ item }) => (
         <TouchableOpacity
             style={styles.projectItem}
-            onPress={() => navigation.navigate('Project', { projectId: item.id })}
+            onPress={() => navigation.navigate('Project', { projectId: item._id})}
         >
             <Text style={styles.projectTitle}>{item.name}</Text>
             <Text style={styles.projectDescription}>{item.description}</Text>
@@ -40,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
                 <View style={styles.menuContainer}>
                     <TouchableOpacity
                         style={styles.menuItem}
-                        onPress={() => {/* Lógica para "Crear Tarea" */ }}>
+                        onPress={() => navigation.navigate('AddTask')}>
                         <Text>Crear Tarea</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
