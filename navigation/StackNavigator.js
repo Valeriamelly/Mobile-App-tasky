@@ -8,22 +8,23 @@ import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons'; 
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
 import TaskScreen from "../screens/TaskScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import AddProjectScreen from "../screens/AddProjectScreen";
 
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
-  
+
   function BottomTabs() {
     return (
       <Tab.Navigator>
-        <Tab.Screen 
+        <Tab.Screen
           name="Home"
           component={HomeScreen}
           options={{
@@ -55,7 +56,7 @@ const StackNavigator = () => {
             ),
           }}
         />
-        <Tab.Screen 
+        <Tab.Screen
           name="Profile"
           component={ProfileScreen}
           options={{
@@ -71,16 +72,17 @@ const StackNavigator = () => {
             ),
           }}
         />
-        
-          
+
+
       </Tab.Navigator>
 
     );
   }
-   
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -106,7 +108,11 @@ const StackNavigator = () => {
           component={ProfileScreen}
           options={{ headerShown: false }}
         />
-
+        <Stack.Screen
+          name="AddProject"
+          component={AddProjectScreen}
+          options={{ headerShown: false}} // Configura las opciones según tus preferencias
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
