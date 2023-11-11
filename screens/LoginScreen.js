@@ -44,11 +44,11 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center", paddingTop: 70 }}
     >
       <View>
         <Image
-          style={{ width: 170, height: 100 }}
+          style={{ width: 100, height: 60}}
           source={{
             uri: "https://info.cegedim-healthcare.co.uk/hubfs/CHS_Tasks%20logo.png",
           }}
@@ -59,7 +59,7 @@ const LoginScreen = () => {
         <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 20,
               fontWeight: "bold",
               marginTop: 12,
               color: "#041E42",
@@ -69,7 +69,7 @@ const LoginScreen = () => {
           </Text>
         </View>
 
-        <View style={{ marginTop: 70 }}>
+        <View style={{ marginTop: 45 }}>
           <View
             style={{
               flexDirection: "row",
@@ -78,7 +78,6 @@ const LoginScreen = () => {
               backgroundColor: "#D0D0D0",
               paddingVertical: 5,
               borderRadius: 5,
-              marginTop: 30,
             }}
           >
             <MaterialCommunityIcons
@@ -157,7 +156,7 @@ const LoginScreen = () => {
           onPress={handleLogin}
           style={{
             width: 200,
-            backgroundColor: "#7743DB",
+            backgroundColor: "#504c94",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",

@@ -53,7 +53,7 @@ const RegisterScreen = () => {
   
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center", paddingTop: 70 }}
     >
       <View>
         <Image
@@ -68,7 +68,7 @@ const RegisterScreen = () => {
         <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 20,
               fontWeight: "bold",
               marginTop: 12,
               color: "#041E42",
@@ -78,7 +78,7 @@ const RegisterScreen = () => {
           </Text>
         </View>
 
-        <View style={{ marginTop: 70 }}>
+        <View style={{ marginTop: 45 }}>
           <View
             style={{
               flexDirection: "row",
@@ -87,7 +87,6 @@ const RegisterScreen = () => {
               backgroundColor: "#D0D0D0",
               paddingVertical: 5,
               borderRadius: 5,
-              marginTop: 30,
             }}
           >
             <Ionicons
@@ -196,7 +195,7 @@ const RegisterScreen = () => {
         onPress={handleRegister}
           style={{
             width: 200,
-            backgroundColor: "#7743DB",
+            backgroundColor: "#504c94",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",

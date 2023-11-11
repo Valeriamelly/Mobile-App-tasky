@@ -29,11 +29,11 @@ const StackNavigator = () => {
           component={HomeScreen}
           options={{
             tabBarLabel: "Home",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabelStyle: {color:"#383a5b"},
             headerShown: false,
             tabBarIcon: ({focused}) => 
             focused ? (
-              <Entypo name="home" size={30} color="#FB2576" />
+              <Entypo name="home" size={30} color="#383a5b" />
               
             ) : (
               <AntDesign name="home" size={30} color="black" />
@@ -45,11 +45,11 @@ const StackNavigator = () => {
           component={TaskScreen} //antes ibas ProjectScreen
           options={{
             tabBarLabel: "Task",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabelStyle: {color:"#383a5b"},
             headerShown: false,
             tabBarIcon: ({focused}) => 
             focused ? (
-              <FontAwesome5 name="tasks" size={30} color="#FB2576" />
+              <FontAwesome5 name="tasks" size={30} color="#383a5b" />
               
             ) : (
               <FontAwesome5 name="tasks" size={30} color="black" />
@@ -61,11 +61,11 @@ const StackNavigator = () => {
           component={ProfileScreen}
           options={{
             tabBarLabel: "Profile",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabelStyle: {color:"#383a5b"},
             headerShown: false,
             tabBarIcon: ({focused}) => 
             focused ? (
-              <MaterialIcons name="person" size={30} color="#FB2576" />
+              <MaterialIcons name="person" size={30} color="#383a5b" />
               
             ) : (
               <Ionicons name="person-outline" size={30} color="black" />

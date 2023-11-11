@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb+srv://chaparro:Miguelyjeni1@cluster0.wibaw6v.mongodb.net/", {
+mongoose.connect("mongodb+srv://valefat:valefat@cluster0.3qco7dw.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -129,12 +129,12 @@ app.post("/login", async (req, res) => {
       //chequear si el usuario existe
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(401).json({ message: "Email o contraseña inválida" });
+        return res.status(401).json({ error: "Email o contraseña inválida" });
       }
 
       //chequear si la contraseña es correcta 
       if (user.password !== password) {
-        return res.status(401).json({ message: "Contraseña inválida" });
+        return res.status(401).json({ error: "Contraseña inválida" });
       }
       
       //se chequea si el correo está verificado
@@ -150,23 +150,6 @@ app.post("/login", async (req, res) => {
       res.status(500).json({ error: "Login Failed" });
     }
   });
-
-  app.post('/add-project', async (req, res) => {
-    try {
-        const { name, description } = req.body;
-
-        // Crear un nuevo proyecto
-        const newProject = new Project({ name, description });
-
-        // Guardar el proyecto en la base de datos
-        await newProject.save();
-
-        res.status(201).json({ message: 'Proyecto creado exitosamente', project: newProject });
-    } catch (error) {
-        console.error('Error al crear el proyecto:', error);
-        res.status(500).json({ message: 'Error al crear el proyecto' });
-    }
-});
 
   // Ruta para crear un nuevo proyecto
 app.post('/add-project', async (req, res) => {

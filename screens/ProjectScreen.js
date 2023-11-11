@@ -12,7 +12,7 @@ const ProjectScreen = ({ route }) => {
         { id: '5', projectId: '2', name: 'Tarea 3', startDate: '2023-01-11', endDate: '2023-01-15' },
         // ... otras tareas
     ];
-
+    
     // Filtrar las tareas para el proyecto seleccionado
     const tasksForProject = tasks.filter(task => task.projectId === projectId);
 
