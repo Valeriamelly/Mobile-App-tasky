@@ -145,7 +145,7 @@ app.post("/login", async (req, res) => {
   
       //generate a token
       const token = jwt.sign({ userId: user._id }, secretKey);
-  
+      
       res.status(200).json({ token });
     } catch (error) {
       res.status(500).json({ error: "Login Failed" });
@@ -197,7 +197,7 @@ app.post('/add-task', async (req, res) => {
         res.status(500).json({ message: 'Error al crear la tarea' });
     }
 });
-
+//ruta para obtener las tareas por proyecto 
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {
         const projectId = req.params.projectId;
@@ -208,3 +208,68 @@ app.get('/projects/:projectId/tasks', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener las tareas' });
     }
 });
+
+// Middleware para autenticación y extraer el ID del usuario
+const authenticateUser = (req, res, next) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1]; // Extrae el token del header
+      const decoded = jwt.verify(token, secretKey); // Verifica el token usando la clave secreta
+      req.userId = decoded.userId; // Añade el userId al objeto de solicitud para su uso posterior
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Autenticación fallida" });
+    }
+  };
+  
+  
+// Ruta para obtener el perfil del usuario
+app.get('/profile', authenticateUser, async (req, res) => {
+    try {
+        // req.userId es proporcionado por el middleware authenticateUser
+        const user = await User.findById(req.userId).select('-password'); // Excluir la contraseña por seguridad
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        // Si se encuentra el usuario, devolver los datos (sin incluir la contraseña)
+        res.json({ 
+            name: user.name,
+            email: user.email // y cualquier otro campo que quieras devolver
+        });
+    } catch (error) {
+        console.error('Error al obtener el perfil del usuario:', error);
+        res.status(500).json({ message: 'Error al obtener el perfil del usuario.' });
+    }
+});
+  
+  // Ruta para actualizar el perfil del usuario
+  app.put('/profile', authenticateUser, async (req, res) => {
+      // req.userId ya está disponible gracias al middleware authenticateUser
+      const { name, password } = req.body;
+      
+      try {
+          // Buscar al usuario por ID
+          const user = await User.findById(req.userId);
+          if (!user) {
+              return res.status(404).json({ message: 'Usuario no encontrado.' });
+          }
+  
+          // Actualizar los campos necesarios
+          if (name) user.name = name;
+          if (password) {
+              //hashear la contraseña antes de guardarla
+              user.password = /* función para hashear */(password);
+          }
+  
+          // Guardar el usuario actualizado en la base de datos
+          await user.save();
+          
+          // Enviar una respuesta exitosa
+          res.json({ message: 'Perfil actualizado con éxito.' });
+      } catch (error) {
+          console.error('Error al actualizar el perfil:', error);
+          res.status(500).json({ message: 'Error al actualizar el perfil.' });
+      }
+  });
+  
