@@ -18,6 +18,23 @@ const ProjectScreen = ({ route, navigation }) => {
             });
     }, [projectId]);
 
+    const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
+        axios.put(`http://192.168.18.50:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
+            .then(() => {
+                // Actualiza el estado para reflejar el cambio
+                setProjectData(prevData => {
+                    const updatedTasks = prevData.tasks.map(task => {
+                        if (task._id === taskId) {
+                            return { ...task, isCompleted: !isCurrentlyCompleted };
+                        }
+                        return task;
+                    });
+                    return { ...prevData, tasks: updatedTasks };
+                });
+            })
+            .catch(error => console.error('Error al actualizar el estado de la tarea:', error));
+    };
+
     const renderTask = ({ item }) => {
         // Formatear fecha y hora de inicio
         const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
@@ -30,6 +47,11 @@ const ProjectScreen = ({ route, navigation }) => {
                 <Text style={styles.taskDescription}>{item.description}</Text>
                 <Text style={styles.taskDate}>Inicio: {formattedStartDate}</Text>
                 <Text style={styles.taskDate}>Fin: {formattedEndDate}</Text>
+                <TouchableOpacity onPress={() => toggleTaskCompletion(item._id, item.isCompleted)}>
+                    <Text style={item.isCompleted ? styles.completed : styles.markComplete}>
+                        {item.isCompleted ? 'Done' : 'Marcar como Completada'}
+                    </Text>
+                </TouchableOpacity>
             </View>
         );
     };
@@ -105,6 +127,17 @@ const styles = StyleSheet.create({
     taskDate: {
         color: 'gray',
     },
+    markComplete: {
+        color: 'blue',
+        marginTop: 10,
+        fontWeight: 'bold'
+    },
+    completed: {
+        color: 'green', // o cualquier color que prefieras
+        marginTop: 10,
+        fontWeight: 'bold'
+    }
+    
 });
 
 export default ProjectScreen;

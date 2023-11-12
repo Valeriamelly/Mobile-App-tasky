@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
 const app = express();
-const port = 8000; 
+const port = 8000;
 const cors = require("cors");
 app.use(cors());
 
@@ -37,17 +37,17 @@ const sendVerificationEmail = async (email, verificationToken) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: "valeriamelly2410@gmail.com",
-            pass: "uhce qohx kwxz rjha",
+            user: "grupitogpt4@gmail.com",
+            pass: "khog vovx kkey blhf",
         },
     });
 
     //email message
     const mailOptions = {
-        from: "task.com",
+        from: '"Tasky G2" <grupitogpt4@gmail.com>', 
         to: email,
         subject: "Email Verification",
-        text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`, 
+        text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`,
     };
     try {
         await transporter.sendMail(mailOptions);
@@ -85,8 +85,8 @@ app.post("/register", async (req, res) => {
 
         res.status(201).json({
             message:
-              "Registration successful. Please check your email for verification.",
-          });
+                "Registration successful. Please check your email for verification.",
+        });
     } catch (error) {
         console.log("Error registrando usuario", error);
         res.status(500).json({ message: "Registro fallido" });
@@ -126,7 +126,7 @@ const secretKey = generateSecretKey();
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
-  
+
         // Chequear si el usuario existe
         const user = await User.findOne({ email });
         if (!user) {
@@ -137,15 +137,15 @@ app.post("/login", async (req, res) => {
         if (user.password !== password) {
             return res.status(401).json({ message: "Contraseña inválida" });
         }
-      
+
         // Chequear si el correo está verificado
         if (!user.verified) {
-            return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión"});
+            return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión" });
         }
-  
+
         // Generar un token
         const token = jwt.sign({ userId: user._id }, secretKey);
-  
+
         // Devolver el token y el correo electrónico en la respuesta
         res.status(200).json({ token, userEmail: user.email });
     } catch (error) {
@@ -154,7 +154,7 @@ app.post("/login", async (req, res) => {
 });
 
 
-  // Ruta para crear un nuevo proyecto
+// Ruta para crear un nuevo proyecto
 app.post('/add-project', async (req, res) => {
     try {
         const { name, description } = req.body;
@@ -236,7 +236,7 @@ app.get('/projects/:projectId/tasks', async (req, res) => {
         }
 
         const tasks = await Task.find({ projectId: projectId });
-        
+
         // Envía las tareas y el nombre del proyecto
         res.status(200).json({ tasks: tasks, projectName: project.name });
     } catch (error) {
@@ -252,6 +252,9 @@ const enviarRecordatorioTarea = async (tarea) => {
     const horaActual = new Date();
     const horaFinTarea = new Date(tarea.endDate);
 
+    // Si la tarea ya está completada, no enviar recordatorio
+    if (tarea.isCompleted) return;
+     
     // Calcula la diferencia en milisegundos
     const diferencia = horaFinTarea.getTime() - horaActual.getTime();
 
@@ -261,13 +264,13 @@ const enviarRecordatorioTarea = async (tarea) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "valeriamelly2410@gmail.com",
-                pass: "uhce qohx kwxz rjha",
+                user: "grupitogpt4@gmail.com",
+                pass: "khog vovx kkey blhf",
             },
         });
 
         const mailOptions = {
-            from: "task.com",
+            from: '"Tasky G2" <grupitogpt4@gmail.com>', // Nombre personalizado y dirección de correo
             to: tarea.userEmail, // Asegúrate de que 'userEmail' sea un campo en tu modelo de tarea
             subject: "Recordatorio de Tarea Próxima a Vencer",
             text: `Hola! Solo un recordatorio de que tu tarea "${tarea.name}" está programada para terminar en una hora.`,
@@ -292,12 +295,12 @@ cron.schedule('* * * * *', async () => {
 
     // Encuentra tareas que terminen exactamente dentro de una hora y aún no se haya enviado un recordatorio
     const tareas = await Task.find({
-
+        isCompleted: false,
         userEmail: { $exists: true, $ne: null },
         reminderSent: false
     });
 
-    console.log(tareas); 
+    console.log(tareas);
 
     tareas.forEach(tarea => {
         // Enviar el recordatorio
@@ -309,4 +312,22 @@ cron.schedule('* * * * *', async () => {
             console.error("Error enviando recordatorio de tarea:", error);
         });
     });
+});
+
+app.put('/tasks/:taskId', async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const { isCompleted } = req.body;
+
+        const updatedTask = await Task.findByIdAndUpdate(taskId, { isCompleted }, { new: true });
+
+        if (!updatedTask) {
+            return res.status(404).json({ message: 'Tarea no encontrada' });
+        }
+
+        res.status(200).json(updatedTask);
+    } catch (error) {
+        console.error('Error al actualizar la tarea:', error);
+        res.status(500).json({ message: 'Error al actualizar la tarea' });
+    }
 });

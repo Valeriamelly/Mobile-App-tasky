@@ -30,6 +30,10 @@ const taskSchema = new mongoose.Schema({
     reminderSent: {
         type: Boolean,
         default: false
+    }, 
+    isCompleted: {
+        type: Boolean,
+        default: false // Por defecto, las tareas no están completadas
     }
 });
 
