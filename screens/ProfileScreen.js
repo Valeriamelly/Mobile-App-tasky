@@ -32,16 +32,18 @@ const ProfileScreen = () => {
         Alert.alert("Error", "No se encontró el token de autenticación.");
         return;
       }
-      // Asume que tu backend valida el token y devuelve la información del usuario
+      // backend valida el token y devuelve la información del usuario
       const response = await axios.get("http://192.168.1.8:8000/profile", {
         headers: {
-          Authorization: `Bearer ${token}`, // Enviar el token en el header
+          //Esto es esencial para validar y permitir el acceso a la información del perfil.
+          Authorization: `Bearer ${token}`, // Enviar el token en el header 
         },
       });
       const { name, email } = response.data;
       setName(name);
       setEmail(email);
-      setGreeting(`Tasky de ${name}!`); // Saludo con el nombre actual
+      setGreeting(`Tasky de ${name}!`);
+    
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
       Alert.alert("Error", "No se pudo obtener la información del perfil.");
@@ -80,6 +82,9 @@ const ProfileScreen = () => {
         "Perfil Actualizado",
         "Tu perfil ha sido actualizado con éxito."
       );
+      // Actualiza el saludo con el nuevo nombre
+      setGreeting(`Tasky de ${name}!`);
+
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al actualizar tu perfil.");
       console.error("Error al actualizar el perfil:", error);
@@ -101,7 +106,6 @@ const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{greeting}</Text>
-      {/* Añade esto dentro del return de tu componente ProfileScreen */}
       {!isFetching && (
         <>
           {/* Muestra el nombre que puede ser editado */}
@@ -129,7 +133,11 @@ const ProfileScreen = () => {
             secureTextEntry
           />
           <Pressable
-            onPress={handleUpdateProfile}
+            onPress={async () => {
+              await handleUpdateProfile(); // Actualiza el perfil en el servidor
+              // Refleja inmediatamente el cambio de nombre
+              setGreeting(`Tasky de ${name}!`);
+            }}
             style={{
               backgroundColor: "#504c94",
               padding: 15,

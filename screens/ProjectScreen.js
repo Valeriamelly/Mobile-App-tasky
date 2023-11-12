@@ -8,6 +8,7 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
     const { projectId } = route.params; // Extrae projectId de route.params
     const [tasks, setTasks] = useState([]); // Estado para almacenar las tareas
 
+    
     const loadTasks = () => {
         axios.get(`http://192.168.1.8:8000/projects/${projectId}/tasks`)
             .then(response => {

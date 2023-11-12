@@ -200,6 +200,7 @@ app.post('/add-task', async (req, res) => {
 //ruta para obtener las tareas por proyecto 
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {
+        //Se utiliza req.params en lugar de req.body porque, en este escenario específico, se espera que el projectId esté en la URL
         const projectId = req.params.projectId;
         const tasks = await Task.find({ projectId: projectId });
         res.status(200).json(tasks);
@@ -212,9 +213,9 @@ app.get('/projects/:projectId/tasks', async (req, res) => {
 // Middleware para autenticación y extraer el ID del usuario
 const authenticateUser = (req, res, next) => {
     try {
-      const token = req.headers.authorization.split(" ")[1]; // Extrae el token del header
-      const decoded = jwt.verify(token, secretKey); // Verifica el token usando la clave secreta
-      req.userId = decoded.userId; // Añade el userId al objeto de solicitud para su uso posterior
+      const token = req.headers.authorization.split(" ")[1]; // Extrae el token del header, dejando de lado la palabra "Bearer".
+      const decoded = jwt.verify(token, secretKey); // Verifica el token usando la clave secreta. La función verify verifica la firma del token con la clave secreta secretKey para asegurarse de que sea válido y no esté alterado.
+      req.userId = decoded.userId;// Si el token es válido, se extrae el identificador del usuario (userId) incrustado en el token.
       next();
     } catch (error) {
       res.status(401).json({ message: "Autenticación fallida" });
@@ -222,7 +223,7 @@ const authenticateUser = (req, res, next) => {
   };
   
   
-// Ruta para obtener el perfil del usuario
+// Ruta para obtener el perfil del usuario, utiliza el middleware authenticateUser
 app.get('/profile', authenticateUser, async (req, res) => {
     try {
         // req.userId es proporcionado por el middleware authenticateUser
