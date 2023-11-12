@@ -19,6 +19,8 @@ const ProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [isFetching, setIsFetching] = useState(true); // Para manejar la carga de datos
+  const [greeting, setGreeting] = useState(""); // Saludo con el nombre
+
 
   // Esta función obtendrá los datos del perfil del usuario
   const fetchUserProfile = async () => {
@@ -39,6 +41,7 @@ const ProfileScreen = () => {
       const { name, email } = response.data;
       setName(name);
       setEmail(email);
+      setGreeting(`Tasky de ${name}!`); // Saludo con el nombre actual
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
       Alert.alert("Error", "No se pudo obtener la información del perfil.");
@@ -97,7 +100,7 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Perfil del Usuario</Text>
+      <Text style={styles.title}>{greeting}</Text>
       {/* Añade esto dentro del return de tu componente ProfileScreen */}
       {!isFetching && (
         <>
@@ -109,7 +112,7 @@ const ProfileScreen = () => {
             value={name}
             onChangeText={setName}
           />
-          
+
           {/* Muestra el correo electrónico sin la opción de editar */}
           <Text style={styles.label}>Correo Electrónico</Text>
           <View style={styles.input}>
