@@ -16,6 +16,7 @@ const ProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // Nuevo estado para la confirmación de la contraseña
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [isFetching, setIsFetching] = useState(true); // Para manejar la carga de datos
@@ -58,6 +59,12 @@ const ProfileScreen = () => {
 
   const handleUpdateProfile = async () => {
     setIsLoading(true);
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Las contraseñas no coinciden.");
+      return;
+    }
+
     try {
       // Obtener el token de autenticación almacenado
       const token = await AsyncStorage.getItem("authToken");
@@ -84,6 +91,9 @@ const ProfileScreen = () => {
       );
       // Actualiza el saludo con el nuevo nombre
       setGreeting(`Tasky de ${name}!`);
+      setPassword(""); // Limpiar el campo de contraseña después de la actualización
+      setConfirmPassword(""); // Limpiar el campo de confirmación de contraseña también
+
 
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al actualizar tu perfil.");
@@ -124,7 +134,7 @@ const ProfileScreen = () => {
           </View>
 
           {/* Campo para actualizar la contraseña */}
-          <Text style={styles.label}>Contraseña</Text>
+          <Text style={styles.label}>Nueva Contraseña</Text>
           <TextInput
             style={styles.input}
             placeholder="Nueva contraseña"
@@ -132,29 +142,26 @@ const ProfileScreen = () => {
             onChangeText={setPassword}
             secureTextEntry
           />
+
+          <Text style={styles.label}>Confirmar Nueva Contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirmar nueva contraseña"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+          />
+
           <Pressable
-            onPress={async () => {
-              await handleUpdateProfile(); // Actualiza el perfil en el servidor
-              // Refleja inmediatamente el cambio de nombre
-              setGreeting(`Tasky de ${name}!`);
-            }}
-            style={{
-              backgroundColor: "#504c94",
-              padding: 15,
-              borderRadius: 10,
-              marginTop: 20,
-            }}
+            onPress={handleUpdateProfile} // Actualiza el perfil en el servidor
+            style={styles.updateButton}
+            disabled={isLoading}
           >
-            <Text
-              style={{
-                textAlign: "center",
-                color: "white",
-                fontSize: 16,
-              }}
-            >
-              Actualizar Perfil
+            <Text style={styles.updateButtonText}>
+              {isLoading ? 'Actualizando...' : 'Actualizar Perfil'}
             </Text>
           </Pressable>
+          
         </>
       )}
 
@@ -192,6 +199,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logoutButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  updateButton: {
+    backgroundColor: "#504c94",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  updateButtonText: {
+    textAlign: "center",
     color: "white",
     fontSize: 16,
   },

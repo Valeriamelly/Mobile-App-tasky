@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Puedes aumentar el número de rondas para un hash más seguro
+
 
 const app = express();
 const port = 8000; 
@@ -69,8 +72,11 @@ app.post("/register", async (req, res) => {
             return res.status(400).json({ message: "Email ya registrado" });
         }
 
-        //crear un nuevo usuario
-        const newUser = new User({ name, email, password });
+        // Hashear la contraseña antes de guardarla
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Crear un nuevo usuario con la contraseña hasheada
+        const newUser = new User({ name, email, password: hashedPassword });
 
         //generar y almacenar la verificacion token
         newUser.verificationToken = crypto.randomBytes(20).toString("hex");
@@ -85,11 +91,12 @@ app.post("/register", async (req, res) => {
 
         res.status(201).json({
             message:
-              "Registration successful. Please check your email for verification.",
+              "Registro exitoso. Por favor, verifica tu correo electrónico.",
           });
     } catch (error) {
-        console.log("Error registrando usuario", error);
+        console.log("Error al registrar el usuario", error);
         res.status(500).json({ message: "Registro fallido" });
+        
     }
 });
 
@@ -133,17 +140,25 @@ app.post("/login", async (req, res) => {
         return res.status(401).json({ error: "Email o contraseña inválida" });
       }
 
-      //chequear si la contraseña es correcta 
-      if (user.password !== password) {
+      // Chequear si la contraseña es correcta
+      // Compara la contraseña hasheada almacenada en la base de datos con la contraseña proporcionada por el usuario
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
         return res.status(401).json({ error: "Contraseña inválida" });
       }
+
+      /*
+      //chequear si la contraseña es correcta sin hash
+      if (user.password !== password) {
+        return res.status(401).json({ error: "Contraseña inválida" });
+      }*/
       
-      //se chequea si el correo está verificado
+      // Se chequea si el correo está verificado
       if (!user.verified) {
         return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión"});
       }
   
-      //generate a token
+      // Generar un token
       const token = jwt.sign({ userId: user._id }, secretKey);
       
       res.status(200).json({ token });
@@ -247,22 +262,26 @@ app.get('/profile', authenticateUser, async (req, res) => {
   // Ruta para actualizar el perfil del usuario
   app.put('/profile', authenticateUser, async (req, res) => {
       // req.userId ya está disponible gracias al middleware authenticateUser
-      const { name, password } = req.body;
+      
       
       try {
+          const { name, password } = req.body;
           // Buscar al usuario por ID
           const user = await User.findById(req.userId);
+          
           if (!user) {
               return res.status(404).json({ message: 'Usuario no encontrado.' });
           }
   
           // Actualizar los campos necesarios
           if (name) user.name = name;
-          if (password) {
-              //hashear la contraseña antes de guardarla
-              user.password = /* función para hashear */(password);
-          }
-  
+
+          // Asegúrate de que la contraseña no sea una cadena vacía antes de hashearla
+          if (password && password.trim() !== '') {
+                const hashedPassword = await bcrypt.hash(password, saltRounds);
+                user.password = hashedPassword;
+           }
+        
           // Guardar el usuario actualizado en la base de datos
           await user.save();
           
