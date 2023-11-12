@@ -226,13 +226,23 @@ app.post('/add-task', async (req, res) => {
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {
         const projectId = req.params.projectId;
+
+        // Buscar el proyecto por su ID para obtener el nombre
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Proyecto no encontrado' });
+        }
+
         const tasks = await Task.find({ projectId: projectId });
-        res.status(200).json(tasks);
+        
+        // Envía las tareas y el nombre del proyecto
+        res.status(200).json({ tasks: tasks, projectName: project.name });
     } catch (error) {
         console.error('Error al obtener las tareas:', error);
         res.status(500).json({ message: 'Error al obtener las tareas' });
     }
 });
+
 
 app.post('/add-task', async (req, res) => {
     try {

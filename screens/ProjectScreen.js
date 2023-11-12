@@ -6,12 +6,12 @@ import { AntDesign } from '@expo/vector-icons';
 
 const ProjectScreen = ({ route, navigation }) => {
     const { projectId } = route.params;
-    const [tasks, setTasks] = useState([]);
+    const [projectData, setProjectData] = useState({ tasks: [], projectName: '' });
 
     useEffect(() => {
         axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
             .then(response => {
-                setTasks(response.data);
+                setProjectData({ tasks: response.data.tasks, projectName: response.data.projectName });
             })
             .catch(error => {
                 console.error('Error al obtener las tareas:', error);
@@ -19,7 +19,6 @@ const ProjectScreen = ({ route, navigation }) => {
     }, [projectId]);
 
     const renderTask = ({ item }) => {
-        // Asegúrate de que las fechas sean válidas
         const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleDateString() : 'Sin fecha';
         const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleDateString() : 'Sin fecha';
     
@@ -35,10 +34,10 @@ const ProjectScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
+            <Text style={styles.projectTitle}>Proyecto {projectData.projectName}</Text>
             <AntDesign name="edit" size={24} color="black" />
             <FlatList
-                data={tasks}
+                data={projectData.tasks}
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderTask}
             />
