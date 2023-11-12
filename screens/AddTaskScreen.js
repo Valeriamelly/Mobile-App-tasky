@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddTaskScreen = ({ navigation, route }) => {
     const { projectId } = route.params;
@@ -16,7 +17,7 @@ const AddTaskScreen = ({ navigation, route }) => {
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
     const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         // Combina la fecha y la hora para el inicio y el fin
         const combinedStartDate = new Date(startDate);
         combinedStartDate.setHours(startTime.getHours());
@@ -25,13 +26,15 @@ const AddTaskScreen = ({ navigation, route }) => {
         const combinedEndDate = new Date(endDate);
         combinedEndDate.setHours(endTime.getHours());
         combinedEndDate.setMinutes(endTime.getMinutes());
+        const userEmail = await AsyncStorage.getItem("userEmail");
 
         const taskData = {
             name,
             description,
             projectId,
             startDate: combinedStartDate,
-            endDate: combinedEndDate
+            endDate: combinedEndDate,
+            userEmail
         };
 
         // Llama a tu API para guardar la tarea
@@ -88,7 +91,7 @@ const AddTaskScreen = ({ navigation, route }) => {
                 multiline
             />
 
-<Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
+            <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
             {showStartDatePicker && (
                 <DateTimePicker
                     value={startDate}

@@ -125,32 +125,34 @@ const secretKey = generateSecretKey();
 
 app.post("/login", async (req, res) => {
     try {
-      const { email, password } = req.body;
+        const { email, password } = req.body;
   
-      //chequear si el usuario existe
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(401).json({ message: "Email o contraseña inválida" });
-      }
+        // Chequear si el usuario existe
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: "Email o contraseña inválida" });
+        }
 
-      //chequear si la contraseña es correcta 
-      if (user.password !== password) {
-        return res.status(401).json({ message: "Contraseña inválida" });
-      }
+        // Chequear si la contraseña es correcta 
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Contraseña inválida" });
+        }
       
-      //se chequea si el correo está verificado
-      if (!user.verified) {
-        return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión"});
-      }
+        // Chequear si el correo está verificado
+        if (!user.verified) {
+            return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión"});
+        }
   
-      //generate a token
-      const token = jwt.sign({ userId: user._id }, secretKey);
+        // Generar un token
+        const token = jwt.sign({ userId: user._id }, secretKey);
   
-      res.status(200).json({ token });
+        // Devolver el token y el correo electrónico en la respuesta
+        res.status(200).json({ token, userEmail: user.email });
     } catch (error) {
-      res.status(500).json({ error: "Login Failed" });
+        res.status(500).json({ error: "Login Failed" });
     }
-  });
+});
+
 
   // Ruta para crear un nuevo proyecto
 app.post('/add-project', async (req, res) => {
@@ -208,10 +210,10 @@ app.get('/projects', async (req, res) => {
 // Ruta para crear una nueva tarea
 app.post('/add-task', async (req, res) => {
     try {
-        const { name, description, projectId, startDate, endDate } = req.body;
+        const { name, description, projectId, startDate, endDate, userEmail } = req.body;
 
-        // Crear una nueva tarea con fechas de inicio y fin
-        const newTask = new Task({ name, description, projectId, startDate, endDate });
+        // Crear una nueva tarea con fechas de inicio y fin y correo electrónico del usuario
+        const newTask = new Task({ name, description, projectId, startDate, endDate, userEmail });
 
         // Guardar la tarea en la base de datos
         await newTask.save();
@@ -244,19 +246,67 @@ app.get('/projects/:projectId/tasks', async (req, res) => {
 });
 
 
-app.post('/add-task', async (req, res) => {
-    try {
-        const { name, description, projectId, startDate, endDate } = req.body;
+//Función para enviar recordatorios
+const enviarRecordatorioTarea = async (tarea) => {
+    console.log("estoy aqui");
+    const horaActual = new Date();
+    const horaFinTarea = new Date(tarea.endDate);
 
-        // Crear una nueva tarea con fechas de inicio y fin
-        const newTask = new Task({ name, description, projectId, startDate, endDate });
+    // Calcula la diferencia en milisegundos
+    const diferencia = horaFinTarea.getTime() - horaActual.getTime();
 
-        // Guardar la tarea en la base de datos
-        await newTask.save();
+    // Si la diferencia es menor o igual a una hora
+    if (diferencia <= 3600000) {
+        // Envía el correo electrónico
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "valeriamelly2410@gmail.com",
+                pass: "uhce qohx kwxz rjha",
+            },
+        });
 
-        res.status(201).json({ message: 'Tarea creada exitosamente', task: newTask });
-    } catch (error) {
-        console.error('Error al crear la tarea:', error);
-        res.status(500).json({ message: 'Error al crear la tarea' });
+        const mailOptions = {
+            from: "task.com",
+            to: tarea.userEmail, // Asegúrate de que 'userEmail' sea un campo en tu modelo de tarea
+            subject: "Recordatorio de Tarea Próxima a Vencer",
+            text: `Hola! Solo un recordatorio de que tu tarea "${tarea.name}" está programada para terminar en una hora.`,
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log("Recordatorio de tarea enviado exitosamente");
+        } catch (error) {
+            console.error("Error enviando recordatorio de tarea:", error);
+        }
     }
+};
+
+const cron = require('node-cron');
+const moment = require('moment');
+
+cron.schedule('* * * * *', async () => {
+    console.log('Verificando tareas para enviar recordatorios...');
+    console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
+
+
+    // Encuentra tareas que terminen exactamente dentro de una hora y aún no se haya enviado un recordatorio
+    const tareas = await Task.find({
+
+        userEmail: { $exists: true, $ne: null },
+        reminderSent: false
+    });
+
+    console.log(tareas); 
+
+    tareas.forEach(tarea => {
+        // Enviar el recordatorio
+        enviarRecordatorioTarea(tarea).then(() => {
+            // Actualizar la tarea para marcar que el recordatorio ha sido enviado
+            tarea.reminderSent = true;
+            tarea.save();
+        }).catch(error => {
+            console.error("Error enviando recordatorio de tarea:", error);
+        });
+    });
 });
