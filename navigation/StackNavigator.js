@@ -12,9 +12,9 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
-import TaskScreen from "../screens/TaskScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddProjectScreen from "../screens/AddProjectScreen";
+import AddTaskScreen from "../screens/AddTaskScreen";
 
 
 const StackNavigator = () => {
@@ -41,8 +41,8 @@ const StackNavigator = () => {
           }}
         />
         <Tab.Screen 
-          name="Task"
-          component={TaskScreen} //antes ibas ProjectScreen
+          name="Project"
+          component={ProjectScreen} //antes ibas ProjectScreen
           options={{
             tabBarLabel: "Task",
             tabBarLabelStyle: {color:"#383a5b"},
@@ -113,6 +113,11 @@ const StackNavigator = () => {
           component={AddProjectScreen}
           options={{ headerShown: false}} // Configura las opciones según tus preferencias
         />
+        <Stack.Screen 
+        name="AddTask" 
+        component={AddTaskScreen} 
+        // Opciones adicionales como `options` si son necesarias
+      />
       </Stack.Navigator>
     </NavigationContainer>
   );

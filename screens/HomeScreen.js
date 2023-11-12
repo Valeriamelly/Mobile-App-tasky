@@ -7,20 +7,33 @@ const HomeScreen = ({ navigation }) => {
     const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
     const [menuVisible, setMenuVisible] = useState(false); // Estado para controlar la visibilidad del menú
 
-    useEffect(() => {
-        axios.get('http://192.168.1.8:8000/projects') // Asegúrate de que la URL sea correcta
+    // Función para cargar proyectos
+    const loadProjects = () => {
+        axios.get('http://192.168.1.8:8000/projects')
             .then(response => {
-                setProjects(response.data); // Actualiza el estado con los proyectos obtenidos
+                setProjects(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener los proyectos:', error);
             });
-    }, []); // Array vacío para que se ejecute solo una vez al montar el componente
+    };
+
+    useEffect(() => {
+        loadProjects(); // Carga inicial de proyectos
+        
+        // Listener para recargar proyectos cuando la pantalla gane foco
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadProjects(); // Recarga proyectos cada vez que la pantalla gane foco
+        });
+        // Función de limpieza para desuscribirse del listener
+        return unsubscribe;
+    }, [navigation]);
+
 
     const renderProject = ({ item }) => (
         <TouchableOpacity
             style={styles.projectItem}
-            onPress={() => navigation.navigate('Task', { projectId: item.id })}
+            onPress={() => navigation.navigate('Project', { projectId: item._id })}
         >
             <Text style={styles.projectTitle}>{item.name}</Text>
             <Text style={styles.projectDescription}>{item.description}</Text>
@@ -39,7 +52,7 @@ const HomeScreen = ({ navigation }) => {
                 <View style={styles.menuContainer}>
                     <TouchableOpacity
                         style={styles.menuItem}
-                        onPress={() => {/* Lógica para "Crear Tarea" */ }}>
+                        onPress={() => navigation.navigate('AddTask')}>
                         <Text>Crear Tarea</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -49,7 +62,6 @@ const HomeScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             )}
-
             <TouchableOpacity
                 onPress={() => setMenuVisible(!menuVisible)}
                 style={styles.floatingButton}>

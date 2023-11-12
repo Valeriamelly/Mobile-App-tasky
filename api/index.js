@@ -29,6 +29,7 @@ app.listen(port, () => {
 
 const User = require("./models/user");
 const Project = require('./models/project'); // Asegúrate de que la ruta sea correcta
+const Task = require('./models/task'); // Ajusta la ruta según sea necesario
 
 //funcion para enviar Email al usuario
 const sendVerificationEmail = async (email, verificationToken) => {
@@ -176,5 +177,34 @@ app.get('/projects', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener los proyectos:', error);
         res.status(500).json({ message: 'Error al obtener los proyectos' });
+    }
+});
+
+// Ruta para crear una nueva tarea
+app.post('/add-task', async (req, res) => {
+    try {
+        const { name, description, projectId } = req.body;
+
+        // Crear una nueva tarea
+        const newTask = new Task({ name, description, projectId });
+
+        // Guardar la tarea en la base de datos
+        await newTask.save();
+
+        res.status(201).json({ message: 'Tarea creada exitosamente', task: newTask });
+    } catch (error) {
+        console.error('Error al crear la tarea:', error);
+        res.status(500).json({ message: 'Error al crear la tarea' });
+    }
+});
+
+app.get('/projects/:projectId/tasks', async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+        const tasks = await Task.find({ projectId: projectId });
+        res.status(200).json(tasks);
+    } catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).json({ message: 'Error al obtener las tareas' });
     }
 });

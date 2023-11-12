@@ -28,23 +28,27 @@ const AddProjectScreen = ({ navigation }) => {
             return;
         }
 
-        setIsLoading(true);
+        setIsLoading(true); // Iniciar el indicador de carga
+
+
         const projectData = {
             name: name,
             description: description,
         };
-
+        
         axios.post('http://192.168.1.8:8000/add-project', projectData)
             .then(response => {
                 Alert.alert("Éxito", "Proyecto guardado correctamente.");
-                navigation.goBack();
+                setName('');
+                setDescription('');
+                navigation.goBack();// Regresa a la pantalla anterior (HomeScreen)
             })
             .catch(error => {
                 Alert.alert("Error", "No se pudo guardar el proyecto.");
                 console.error('Error al guardar el proyecto:', error);
             })
             .finally(() => {
-                setIsLoading(false);
+                setIsLoading(false); // Detener el indicador de carga
             });
     };
 
@@ -73,6 +77,7 @@ const AddProjectScreen = ({ navigation }) => {
                 <Button
                     title="Guardar Proyecto"
                     onPress={handleSave}
+                    disabled={isLoading} // evitar envíos múltiples.
                 />
             )}
         </View>
