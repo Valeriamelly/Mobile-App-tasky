@@ -19,8 +19,10 @@ const ProjectScreen = ({ route, navigation }) => {
     }, [projectId]);
 
     const renderTask = ({ item }) => {
-        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleDateString() : 'Sin fecha';
-        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleDateString() : 'Sin fecha';
+        // Formatear fecha y hora de inicio
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
+        // Formatear fecha y hora de fin
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
     
         return (
             <View style={styles.taskCard}>
@@ -31,7 +33,6 @@ const ProjectScreen = ({ route, navigation }) => {
             </View>
         );
     };
-
     return (
         <View style={styles.container}>
             <Text style={styles.projectTitle}>Proyecto {projectData.projectName}</Text>

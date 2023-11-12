@@ -1,26 +1,40 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
-import DateTimePicker from '@react-native-community/datetimepicker'; // Asegúrate de tener esta dependencia instalada
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const AddTaskScreen = ({ navigation, route }) => {
     const { projectId } = route.params;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState(new Date());
+    const [startTime, setStartTime] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const [showStartPicker, setShowStartPicker] = useState(false);
-    const [showEndPicker, setShowEndPicker] = useState(false);
+    const [endTime, setEndTime] = useState(new Date());
+    const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+    const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+    const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+    const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
     const handleSave = () => {
+        // Combina la fecha y la hora para el inicio y el fin
+        const combinedStartDate = new Date(startDate);
+        combinedStartDate.setHours(startTime.getHours());
+        combinedStartDate.setMinutes(startTime.getMinutes());
+
+        const combinedEndDate = new Date(endDate);
+        combinedEndDate.setHours(endTime.getHours());
+        combinedEndDate.setMinutes(endTime.getMinutes());
+
         const taskData = {
             name,
             description,
             projectId,
-            startDate, // Asegúrate de formatear las fechas según lo esperado por tu backend
-            endDate
+            startDate: combinedStartDate,
+            endDate: combinedEndDate
         };
 
+        // Llama a tu API para guardar la tarea
         axios.post('http://192.168.18.50:8000/add-task', taskData)
             .then(response => {
                 console.log('Tarea guardada:', response.data);
@@ -31,16 +45,28 @@ const AddTaskScreen = ({ navigation, route }) => {
             });
     };
 
-    const onChangeStart = (event, selectedDate) => {
+    const onChangeStartDate = (event, selectedDate) => {
         const currentDate = selectedDate || startDate;
-        setShowStartPicker(false);
+        setShowStartDatePicker(false);
         setStartDate(currentDate);
     };
 
-    const onChangeEnd = (event, selectedDate) => {
+    const onChangeStartTime = (event, selectedDate) => {
+        const currentDate = selectedDate || startTime;
+        setShowStartTimePicker(false);
+        setStartTime(currentDate);
+    };
+
+    const onChangeEndDate = (event, selectedDate) => {
         const currentDate = selectedDate || endDate;
-        setShowEndPicker(false);
+        setShowEndDatePicker(false);
         setEndDate(currentDate);
+    };
+
+    const onChangeEndTime = (event, selectedDate) => {
+        const currentDate = selectedDate || endTime;
+        setShowEndTimePicker(false);
+        setEndTime(currentDate);
     };
 
     return (
@@ -62,28 +88,47 @@ const AddTaskScreen = ({ navigation, route }) => {
                 multiline
             />
 
-            <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartPicker(true)} />
-            {showStartPicker && (
+<Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
+            {showStartDatePicker && (
                 <DateTimePicker
                     value={startDate}
                     mode="date"
                     display="default"
-                    onChange={onChangeStart}
+                    onChange={onChangeStartDate}
                 />
             )}
 
-            <Button title="Seleccionar fecha de fin" onPress={() => setShowEndPicker(true)} />
-            {showEndPicker && (
+            <Button title="Seleccionar hora de inicio" onPress={() => setShowStartTimePicker(true)} />
+            {showStartTimePicker && (
+                <DateTimePicker
+                    value={startTime}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeStartTime}
+                />
+            )}
+
+            <Button title="Seleccionar fecha de fin" onPress={() => setShowEndDatePicker(true)} />
+            {showEndDatePicker && (
                 <DateTimePicker
                     value={endDate}
                     mode="date"
                     display="default"
-                    onChange={onChangeEnd}
+                    onChange={onChangeEndDate}
+                />
+            )}
+
+            <Button title="Seleccionar hora de fin" onPress={() => setShowEndTimePicker(true)} />
+            {showEndTimePicker && (
+                <DateTimePicker
+                    value={endTime}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeEndTime}
                 />
             )}
 
             <Button title="Guardar Tarea" onPress={handleSave} />
-
         </View>
     );
 };

@@ -18,9 +18,10 @@ const HomeScreen = ({ navigation }) => {
     }, []);
 
     const renderProject = ({ item }) => {
-        // Formatear las fechas para mostrarlas correctamente
-        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleDateString() : 'Sin fecha';
-        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleDateString() : 'Sin fecha';
+        // Formatear fecha y hora de inicio
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
+        // Formatear fecha y hora de fin
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
 
         return (
             <TouchableOpacity
