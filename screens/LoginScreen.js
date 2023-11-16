@@ -32,7 +32,9 @@ const LoginScreen = () => {
       .then((response) => {
         console.log(response);
         const token = response.data.token;
+        const userEmail = response.data.userEmail; // Suponiendo que obtienes el correo electrónico en la respuesta
         AsyncStorage.setItem("authToken", token);
+        AsyncStorage.setItem("userEmail", userEmail); // Guardar el correo electrónico
         navigation.replace("Main");
       })
       .catch((error) => {

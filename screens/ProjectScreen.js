@@ -1,40 +1,76 @@
 // ProjectScreen.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
+const ProjectScreen = ({ route, navigation }) => {
+    const { projectId } = route.params;
+    const [projectData, setProjectData] = useState({ tasks: [], projectName: '' });
 
-const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
-    const { projectId } = route.params; // Extrae projectId de route.params
-    const [tasks, setTasks] = useState([]); // Estado para almacenar las tareas
-
-    useEffect(() => {
-        // Reemplaza la URL con la ruta correcta de tu backend
+    const loadTasks = () => {
         axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
             .then(response => {
-                setTasks(response.data); // Actualiza el estado con las tareas obtenidas
+                setProjectData(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener las tareas:', error);
             });
-    }, [projectId]); 
+    };
 
-    const renderTask = ({ item }) => (
-        <View style={styles.taskCard}>
-            <Text style={styles.taskName}>{item.name}</Text>
-            <Text style={styles.taskDescription}>{item.description}</Text>
+    useEffect(() => {
+        loadTasks(); // Carga inicial de tareas
 
-            {/* Puedes incluir o excluir fechas según tu modelo de tarea */}
-        </View>
-    );
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadTasks(); // Recarga tareas cada vez que la pantalla gane foco
+        });
 
+        return unsubscribe; // Desuscripción al desmontar
+    }, [navigation, projectId]);
+
+    const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
+        axios.put(`http://192.168.18.50:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
+            .then(() => {
+                // Actualiza el estado para reflejar el cambio
+                setProjectData(prevData => {
+                    const updatedTasks = prevData.tasks.map(task => {
+                        if (task._id === taskId) {
+                            return { ...task, isCompleted: !isCurrentlyCompleted };
+                        }
+                        return task;
+                    });
+                    return { ...prevData, tasks: updatedTasks };
+                });
+            })
+            .catch(error => console.error('Error al actualizar el estado de la tarea:', error));
+    };
+
+    const renderTask = ({ item }) => {
+        // Formatear fecha y hora de inicio
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
+        // Formatear fecha y hora de fin
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
+    
+        return (
+            <View style={styles.taskCard}>
+                <Text style={styles.taskName}>{item.name}</Text>
+                <Text style={styles.taskDescription}>{item.description}</Text>
+                <Text style={styles.taskDate}>Inicio: {formattedStartDate}</Text>
+                <Text style={styles.taskDate}>Fin: {formattedEndDate}</Text>
+                <TouchableOpacity onPress={() => toggleTaskCompletion(item._id, item.isCompleted)}>
+                    <Text style={item.isCompleted ? styles.completed : styles.markComplete}>
+                        {item.isCompleted ? 'Done' : 'Marcar como Completada'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
     return (
         <View style={styles.container}>
-            <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
-            <AntDesign name="edit" size={24} color="black" onPress={() => { }} />
+            <Text style={styles.projectTitle}>Proyecto {projectData.projectName}</Text>
+            <AntDesign name="edit" size={24} color="black" />
             <FlatList
-                data={tasks}
+                data={projectData.tasks}
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderTask}
             />
@@ -48,6 +84,10 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
 };
 
 const styles = StyleSheet.create({
+    taskDate: {
+        fontSize: 14,
+        color: 'grey', // Puedes ajustar el estilo según tus preferencias
+    },
     floatingButton: {
         backgroundColor: '#007bff', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón
@@ -97,6 +137,17 @@ const styles = StyleSheet.create({
     taskDate: {
         color: 'gray',
     },
+    markComplete: {
+        color: 'blue',
+        marginTop: 10,
+        fontWeight: 'bold'
+    },
+    completed: {
+        color: 'green', // o cualquier color que prefieras
+        marginTop: 10,
+        fontWeight: 'bold'
+    }
+    
 });
 
 export default ProjectScreen;
