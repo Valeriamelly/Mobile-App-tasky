@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Puedes aumentar el número de rondas para un hash más seguro
 
 const app = express();
 const port = 8000;
@@ -44,7 +46,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
 
     //email message
     const mailOptions = {
-        from: '"Tasky G2" <grupitogpt4@gmail.com>', 
+        from: '"Tasky G2" <grupitogpt4@gmail.com>',
         to: email,
         subject: "Email Verification",
         text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`,
@@ -69,8 +71,11 @@ app.post("/register", async (req, res) => {
             return res.status(400).json({ message: "Email ya registrado" });
         }
 
-        //crear un nuevo usuario
-        const newUser = new User({ name, email, password });
+        // Hashear la contraseña antes de guardarla
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Crear un nuevo usuario con la contraseña hasheada
+        const newUser = new User({ name, email, password: hashedPassword });
 
         //generar y almacenar la verificacion token
         newUser.verificationToken = crypto.randomBytes(20).toString("hex");
@@ -133,10 +138,15 @@ app.post("/login", async (req, res) => {
             return res.status(401).json({ message: "Email o contraseña inválida" });
         }
 
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: "Contraseña inválida" });
+        }
+        /*
         // Chequear si la contraseña es correcta 
         if (user.password !== password) {
             return res.status(401).json({ message: "Contraseña inválida" });
-        }
+        } */
 
         // Chequear si el correo está verificado
         if (!user.verified) {
@@ -254,7 +264,7 @@ const enviarRecordatorioTarea = async (tarea) => {
 
     // Si la tarea ya está completada, no enviar recordatorio
     if (tarea.isCompleted) return;
-     
+
     // Calcula la diferencia en milisegundos
     const diferencia = horaFinTarea.getTime() - horaActual.getTime();
 
@@ -331,3 +341,73 @@ app.put('/tasks/:taskId', async (req, res) => {
         res.status(500).json({ message: 'Error al actualizar la tarea' });
     }
 });
+
+
+// Middleware para autenticación y extraer el ID del usuario
+const authenticateUser = (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]; // Extrae el token del header, dejando de lado la palabra "Bearer".
+        const decoded = jwt.verify(token, secretKey); // Verifica el token usando la clave secreta. La función verify verifica la firma del token con la clave secreta secretKey para asegurarse de que sea válido y no esté alterado.
+        req.userId = decoded.userId;// Si el token es válido, se extrae el identificador del usuario (userId) incrustado en el token.
+        next();
+    } catch (error) {
+        res.status(401).json({ message: "Autenticación fallida" });
+    }
+};
+
+
+// Ruta para obtener el perfil del usuario, utiliza el middleware authenticateUser
+app.get('/profile', authenticateUser, async (req, res) => {
+    try {
+        // req.userId es proporcionado por el middleware authenticateUser
+        const user = await User.findById(req.userId).select('-password'); // Excluir la contraseña por seguridad
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        // Si se encuentra el usuario, devolver los datos (sin incluir la contraseña)
+        res.json({
+            name: user.name,
+            email: user.email // y cualquier otro campo que quieras devolver
+        });
+    } catch (error) {
+        console.error('Error al obtener el perfil del usuario:', error);
+        res.status(500).json({ message: 'Error al obtener el perfil del usuario.' });
+    }
+});
+
+// Ruta para actualizar el perfil del usuario
+app.put('/profile', authenticateUser, async (req, res) => {
+    // req.userId ya está disponible gracias al middleware authenticateUser
+
+
+    try {
+        const { name, password } = req.body;
+        // Buscar al usuario por ID
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        // Actualizar los campos necesarios
+        if (name) user.name = name;
+
+        // Asegúrate de que la contraseña no sea una cadena vacía antes de hashearla
+        if (password && password.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            user.password = hashedPassword;
+        }
+
+        // Guardar el usuario actualizado en la base de datos
+        await user.save();
+
+        // Enviar una respuesta exitosa
+        res.json({ message: 'Perfil actualizado con éxito.' });
+    } catch (error) {
+        console.error('Error al actualizar el perfil:', error);
+        res.status(500).json({ message: 'Error al actualizar el perfil.' });
+    }
+});
+

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +16,23 @@ const AddTaskScreen = ({ navigation, route }) => {
     const [showStartTimePicker, setShowStartTimePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
     const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+    
+    const validateInput = () => {
+        if (!name.trim() || !description.trim()) {
+            Alert.alert("Error", "Por favor, rellena todos los campos.");
+            return false;
+        }
+        if (name.length < 3) {
+            Alert.alert("Error", "El nombre de la tarea debe tener al menos 3 caracteres.");
+            return false;
+        }
+        if (description.length < 5) {
+            Alert.alert("Error", "La descripción debe tener al menos 5 caracteres.");
+            return false;
+        }
+        // Aquí puedes agregar más validaciones si lo necesitas
+        return true;
+    };
 
     const handleSave = async () => {
         // Combina la fecha y la hora para el inicio y el fin
@@ -28,6 +45,10 @@ const AddTaskScreen = ({ navigation, route }) => {
         combinedEndDate.setMinutes(endTime.getMinutes());
         const userEmail = await AsyncStorage.getItem("userEmail");
 
+        if (!validateInput()) {
+            return;
+        }
+        
         const taskData = {
             name,
             description,

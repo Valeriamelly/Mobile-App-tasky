@@ -8,15 +8,25 @@ const ProjectScreen = ({ route, navigation }) => {
     const { projectId } = route.params;
     const [projectData, setProjectData] = useState({ tasks: [], projectName: '' });
 
-    useEffect(() => {
+    const loadTasks = () => {
         axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
             .then(response => {
-                setProjectData({ tasks: response.data.tasks, projectName: response.data.projectName });
+                setProjectData(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener las tareas:', error);
             });
-    }, [projectId]);
+    };
+
+    useEffect(() => {
+        loadTasks(); // Carga inicial de tareas
+
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadTasks(); // Recarga tareas cada vez que la pantalla gane foco
+        });
+
+        return unsubscribe; // Desuscripción al desmontar
+    }, [navigation, projectId]);
 
     const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
         axios.put(`http://192.168.18.50:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })

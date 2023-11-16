@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
 import AddProjectScreen from "../screens/AddProjectScreen";
 import AddTaskScreen from "../screens/AddTaskScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 
 const StackNavigator = () => {
@@ -57,7 +58,7 @@ const StackNavigator = () => {
         />
         <Tab.Screen
           name="Profile"
-          component={HomeScreen}
+          component={ProfileScreen}
           options={{
             tabBarLabel: "Profile",
             tabBarLabelStyle: { color: "#008E97" },
@@ -100,6 +101,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="ProjectScreen"
           component={ProjectScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
