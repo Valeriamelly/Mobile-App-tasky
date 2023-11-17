@@ -12,9 +12,9 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
-import TaskScreen from "../screens/TaskScreen";
-import ProfileScreen from "../screens/ProfileScreen";
 import AddProjectScreen from "../screens/AddProjectScreen";
+import AddTaskScreen from "../screens/AddTaskScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 
 const StackNavigator = () => {
@@ -29,31 +29,31 @@ const StackNavigator = () => {
           component={HomeScreen}
           options={{
             tabBarLabel: "Home",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabelStyle: { color: "#008E97" },
             headerShown: false,
-            tabBarIcon: ({focused}) => 
-            focused ? (
-              <Entypo name="home" size={30} color="#FB2576" />
-              
-            ) : (
-              <AntDesign name="home" size={30} color="black" />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <Entypo name="home" size={30} color="#008E97" />
+
+              ) : (
+                <AntDesign name="home" size={30} color="black" />
+              ),
           }}
         />
-        <Tab.Screen 
-          name="Task"
-          component={TaskScreen} //antes ibas ProjectScreen
+        <Tab.Screen
+          name="Project"
+          component={ProjectScreen} //antes ibas HomeScreen
           options={{
-            tabBarLabel: "Task",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabel: "Project",
+            tabBarLabelStyle: { color: "#008E97" },
             headerShown: false,
-            tabBarIcon: ({focused}) => 
-            focused ? (
-              <FontAwesome5 name="tasks" size={30} color="#FB2576" />
-              
-            ) : (
-              <FontAwesome5 name="tasks" size={30} color="black" />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <FontAwesome5 name="tasks" size={30} color="#008E97" />
+
+              ) : (
+                <FontAwesome5 name="tasks" size={30} color="black" />
+              ),
           }}
         />
         <Tab.Screen
@@ -61,15 +61,15 @@ const StackNavigator = () => {
           component={ProfileScreen}
           options={{
             tabBarLabel: "Profile",
-            tabBarLabelStyle: {color:"#FB2576"},
+            tabBarLabelStyle: { color: "#008E97" },
             headerShown: false,
-            tabBarIcon: ({focused}) => 
-            focused ? (
-              <MaterialIcons name="person" size={30} color="#FB2576" />
-              
-            ) : (
-              <Ionicons name="person-outline" size={30} color="black" />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <MaterialIcons name="person" size={30} color="#008E97" />
+
+              ) : (
+                <Ionicons name="person-outline" size={30} color="black" />
+              ),
           }}
         />
 
@@ -113,6 +113,11 @@ const StackNavigator = () => {
           component={AddProjectScreen}
           options={{ headerShown: false}} // Configura las opciones según tus preferencias
         />
+        <Stack.Screen 
+        name="AddTask" 
+        component={AddTaskScreen} 
+        // Opciones adicionales como `options` si son necesarias
+      />
       </Stack.Navigator>
     </NavigationContainer>
   );
