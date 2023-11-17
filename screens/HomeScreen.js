@@ -8,7 +8,7 @@ const HomeScreen = ({ navigation }) => {
     const [menuVisible, setMenuVisible] = useState(false); // Estado para controlar la visibilidad del menú
 
     useEffect(() => {
-        axios.get('http://192.168.18.50:8000/projects') // Asegúrate de que la URL sea correcta
+        axios.get('http://192.168.18.6:8000/projects') // Asegúrate de que la URL sea correcta
             .then(response => {
                 setProjects(response.data); // Actualiza el estado con los proyectos obtenidos
             })

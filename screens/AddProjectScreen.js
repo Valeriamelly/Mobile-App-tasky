@@ -12,7 +12,7 @@ const AddProjectScreen = ({ navigation }) => {
             description: description,
         };
 
-        axios.post('http://192.168.18.50:8000/add-project', projectData)
+        axios.post('http://192.168.18.6:8000/add-project', projectData)
             .then(response => {
                 console.log('Proyecto guardado:', response.data);
                 navigation.goBack();

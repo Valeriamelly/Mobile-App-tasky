@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb+srv://chaparro:Miguelyjeni1@cluster0.wibaw6v.mongodb.net/", {
+mongoose.connect("mongodb+srv://sperezc5:1234@tasky-app.jxoewoy.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -27,7 +27,7 @@ app.listen(port, () => {
     console.log("Server is running on port 8000");
 });
 
-const User = require("./models/user");
+const User = require('./models/user');
 const Project = require('./models/project'); // Asegúrate de que la ruta sea correcta
 
 //funcion para enviar Email al usuario
@@ -129,12 +129,12 @@ app.post("/login", async (req, res) => {
       //chequear si el usuario existe
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(401).json({ message: "Email o contraseña inválida" });
+        return res.status(401).json({ error: "Email o contraseña inválida" });
       }
 
       //chequear si la contraseña es correcta 
       if (user.password !== password) {
-        return res.status(401).json({ message: "Contraseña inválida" });
+        return res.status(401).json({ error: "Contraseña inválida" });
       }
       
       //se chequea si el correo está verificado
