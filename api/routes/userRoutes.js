@@ -1,14 +1,11 @@
-const userController=require('../controllers/userController');
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
 
-module.exports=(app) =>{
+router.post('/register', userController.register);
+router.get('/verify/:token', userController.verifyEmail);
+router.post('/login', userController.login);
+router.get('/profile', userController.authenticateUser, userController.getUserProfile);
+router.put('/profile', userController.authenticateUser, userController.updateUserProfile);
 
-    //User login
-    app.post("/login", userController.login);
-    
-    //User registeration 
-    app.post("/register", userController.register);
-
-    //User confirma correo
-    app.get("/verify/:token", userController.authentication);
-
-  }
+module.exports = router;

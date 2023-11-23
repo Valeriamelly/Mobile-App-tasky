@@ -1,11 +1,9 @@
-const projectController=require('../controllers/projectController');
+const express = require('express');
+const router = express.Router();
+const projectController = require('../controllers/projectController');
 
-module.exports=(app) =>{
+router.post('/add-project', projectController.createProject);
+router.get('/get-all', projectController.getProjects);
 
-    //Obtener los proyectos
-    app.get('/projects', projectController.getAll);
-
-    //Almacenar los proyectos
-    app.post('/add-project', projectController.create);
-}
+module.exports = router;
 

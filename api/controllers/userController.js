@@ -1,60 +1,123 @@
-const crypto = require("crypto");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const crypto = require('crypto');  
 const User = require('../models/user');
-const jwt = require("jsonwebtoken");
 
+const saltRounds = 10;
+
+// Función para generar una clave secreta
+const generateSecretKey = () => {
+    return crypto.randomBytes(32).toString('hex');
+};
+
+const secretKey = generateSecretKey();
 
 
 //Funcion para enviar Email al usuario
 const sendVerificationEmail = async (email, verificationToken) => {
-  //configurar servicio de email
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "valeriamelly2410@gmail.com",
-      pass: "uhce qohx kwxz rjha",
-    },
-  });
+    //configurar servicio de email
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "grupitogpt4@gmail.com",
+            pass: "khog vovx kkey blhf",
+        },
+    });
 
-  //email message
-  const mailOptions = {
-    from: "task.com",
-    to: email,
-    subject: "Email Verification",
-    text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`,
-  };
+    //email message
+    const mailOptions = {
+        from: '"Tasky G2" <grupitogpt4@gmail.com>',
+        to: email,
+        subject: "Email Verification",
+        text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/users/verify/${verificationToken}`,
+    };
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Verificacion de email enviada exitosamente");
+    } catch (error) {
+        console.error("Error enviando verificación de email:", error);
+    }
+};
+
+exports.authenticateUser = (req, res, next) => {
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("Verificacion de email enviada exitosamente");
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, secretKey);
+    req.userId = decoded.userId;
+    next();
   } catch (error) {
-    console.error("Error enviando verificación de email:", error);
+    res.status(401).json({ message: "Autenticación fallida" });
   }
 };
 
-const generateSecretKey = () => {
-  const secretKey = crypto.randomBytes(32).toString("hex");
+exports.getUserProfile = async (req, res) => {
+  try {
+    // Obtener el perfil del usuario
+    // req.userId es proporcionado por el middleware authenticateUser
+    const user = await User.findById(req.userId).select('-password'); // Excluir la contraseña por seguridad
 
-  return secretKey;
-}
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
 
-const secretKey = generateSecretKey();
+    // Si se encuentra el usuario, devolver los datos (sin incluir la contraseña)
+    res.json({
+      name: user.name,
+      email: user.email // y cualquier otro campo que quieras devolver
+    });
+  } catch (error) {
+    console.error('Error al obtener el perfil del usuario:', error);
+    res.status(500).json({ message: 'Error al obtener el perfil del usuario.' });
+  }
+};
 
-module.exports = {
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { name, password } = req.body;
+    // Buscar al usuario por ID
+    const user = await User.findById(req.userId);
 
-  //Registrar usuario en la app
-  async register(req, res) {
-    try {
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+
+    // Actualizar los campos necesarios
+    if (name) user.name = name;
+
+    // Asegúrate de que la contraseña no sea una cadena vacía antes de hashearla
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      user.password = hashedPassword;
+    }
+
+    // Guardar el usuario actualizado en la base de datos
+    await user.save();
+
+    // Enviar una respuesta exitosa
+    res.json({ message: 'Perfil actualizado con éxito.' });
+  } catch (error) {
+    console.error('Error al actualizar el perfil:', error);
+    res.status(500).json({ message: 'Error al actualizar el perfil.' });
+  }
+};
+
+exports.register = async (req, res) => {
+  try {
       const { name, email, password } = req.body;
 
       //chequear si el email está ya registrado
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        console.log("Email already registered:", email);
-        return res.status(400).json({ message: "Email ya registrado" });
+          console.log("Email already registered:", email);
+          return res.status(400).json({ message: "Email ya registrado" });
       }
 
-      //crear un nuevo usuario
-      const newUser = new User({ name, email, password });
+      // Hashear la contraseña antes de guardarla
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Crear un nuevo usuario con la contraseña hasheada
+      const newUser = new User({ name, email, password: hashedPassword });
 
       //generar y almacenar la verificacion token
       newUser.verificationToken = crypto.randomBytes(20).toString("hex");
@@ -68,54 +131,23 @@ module.exports = {
       sendVerificationEmail(newUser.email, newUser.verificationToken);
 
       res.status(201).json({
-        message:
-          "Registration successful. Please check your email for verification.",
+          message:
+              "Registration successful. Please check your email for verification.",
       });
-    } catch (error) {
-      console.log("Error registrando usuario", error);
-      res.status(500).json({ message: "Registro fallido" });
-    }
-  },
+  } catch (error) {
+      console.error('Error registrando usuario:', error);
+      res.status(500).json({ message: 'Registro fallido' });
+  }
+};
 
-  //Iniciar sesión del usuario
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
-
-      //chequear si el usuario existe
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(401).json({ error: "Email o contraseña inválida" });
-      }
-
-      //chequear si la contraseña es correcta 
-      if (user.password !== password) {
-        return res.status(401).json({ error: "Contraseña inválida" });
-      }
-
-      //se chequea si el correo está verificado
-      if (!user.verified) {
-        return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión" });
-      }
-
-      //generate a token
-      const token = jwt.sign({ userId: user._id }, secretKey);
-
-      res.status(200).json({ token });
-    } catch (error) {
-      res.status(500).json({ error: "Login Failed" });
-    }
-
-  },
-
-  async authentication(req, res) {
-    try {
+exports.verifyEmail = async (req, res) => {
+  try {
       const token = req.params.token;
 
       //Encontrar al usuario con la verficación del token dado
       const user = await User.findOne({ verificationToken: token });
       if (!user) {
-        return res.status(404).json({ message: "Verificación del token inválido" });
+          return res.status(404).json({ message: "Verificación del token inválido" });
       }
 
       //Marcar al usuario como verificado
@@ -125,9 +157,43 @@ module.exports = {
       await user.save();
 
       res.status(200).json({ message: "Email verificado exitosamente" });
-    } catch (error) {
-      res.status(500).json({ message: "Verificación del email fallida" });
-    }
+  } catch (error) {
+      res.status(500).json({ message: 'Verificación del email fallida' });
   }
+};
 
-}
+exports.login = async (req, res) => {
+  try {
+      
+      const { email, password } = req.body;
+
+      // Chequear si el usuario existe
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(401).json({ message: "Email o contraseña inválida" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.status(401).json({ error: "Contraseña inválida" });
+      }
+      /*
+      // Chequear si la contraseña es correcta 
+      if (user.password !== password) {
+          return res.status(401).json({ message: "Contraseña inválida" });
+      } */
+
+      // Chequear si el correo está verificado
+      if (!user.verified) {
+          return res.status(401).json({ error: "Verifica tu correo electrónico antes de iniciar sesión" });
+      }
+
+      // Generar un token
+      const token = jwt.sign({ userId: user._id }, secretKey);
+
+      // Devolver el token y el correo electrónico en la respuesta
+      res.status(200).json({ token, userEmail: user.email });
+  } catch (error) {
+      res.status(500).json({ error: 'Login Failed' });
+  }
+};
