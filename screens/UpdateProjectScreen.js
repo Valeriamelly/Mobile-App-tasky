@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import axios from 'axios';
 
-const AddProjectScreen = ({ navigation }) => {
-    const [name, setName] = useState(''); // Define el estado para el nombre
-    const [description, setDescription] = useState(''); // Define el estado para la descripción
+const UpdateProjectScreen = ({ navigation, route }) => {
+    const { projectId, currentName, currentDescription } = route.params;
+    
+    const [name, setName] = useState(currentName);
+    const [description, setDescription] = useState(currentDescription);
     const [isLoading, setIsLoading] = useState(false);
 
     const validateInput = () => {
@@ -23,7 +25,7 @@ const AddProjectScreen = ({ navigation }) => {
         return true;
     };
 
-    const handleSave = () => {
+    const handleUpdate = () => {
         if (!validateInput()) {
             return;
         }
@@ -35,13 +37,13 @@ const AddProjectScreen = ({ navigation }) => {
             description: description,
         };
 
-        axios.post('http://192.168.18.50:8000/add-project', projectData)
-            .then(response => {
-                console.log('Proyecto guardado:', response.data);
-                navigation.goBack();
+        axios.put(`http://192.168.18.50:8000/update-project/${projectId}`, projectData)
+        .then(response => {
+                console.log('Proyecto actualizado:', response.data);
+                navigation.goBack(); // Puede que desees ir a una pantalla específica tras actualizar
             })
             .catch(error => {
-                console.error('Error al guardar el proyecto:', error);
+                console.error('Error al actualizar el proyecto:', error);
             });
     };
 
@@ -65,8 +67,8 @@ const AddProjectScreen = ({ navigation }) => {
             />
 
             <Button
-                title="Guardar Proyecto"
-                onPress={handleSave}
+                title="Actualizar Proyecto"
+                onPress={handleUpdate}
             />
         </View>
     );
@@ -91,4 +93,4 @@ const styles = StyleSheet.create({
     // ... otros estilos que necesites
 });
 
-export default AddProjectScreen;
+export default UpdateProjectScreen;

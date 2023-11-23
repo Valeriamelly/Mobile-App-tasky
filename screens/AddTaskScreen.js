@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert,TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,7 +17,7 @@ const AddTaskScreen = ({ navigation, route }) => {
     const [showStartTimePicker, setShowStartTimePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
     const [showEndTimePicker, setShowEndTimePicker] = useState(false);
-    
+
     const validateInput = () => {
         if (!name.trim() || !description.trim()) {
             Alert.alert("Error", "Por favor, rellena todos los campos.");
@@ -31,14 +31,22 @@ const AddTaskScreen = ({ navigation, route }) => {
             Alert.alert("Error", "La descripción debe tener al menos 10 caracteres.");
             return false;
         }
-        // Aquí puedes agregar más validaciones si lo necesitas
-        // Validar que la fecha de inicio sea igual o mayor a la fecha actual
-        if (moment(startDate).isBefore(moment(), 'day')) {
-            Alert.alert("Error", "La fecha de inicio debe ser hoy o en el futuro.");
+        // Combina la fecha y la hora de inicio para la validación
+        // Combina la fecha y la hora de inicio para la validación
+        const combinedStartDateTime = moment.tz({
+            year: startDate.getFullYear(),
+            month: startDate.getMonth(),
+            day: startDate.getDate(),
+            hour: startTime.getHours(),
+            minute: startTime.getMinutes()
+        }, 'America/Lima');
+
+        // Comprueba si la fecha y hora combinadas de inicio son anteriores a la fecha y hora actuales
+        if (combinedStartDateTime.isSameOrBefore(moment())) {
+            Alert.alert("Error", "La fecha y hora de inicio deben ser iguales o mayores a la fecha y hora actuales.");
             return false;
         }
 
-        
         return true;
     };
 
@@ -67,12 +75,12 @@ const AddTaskScreen = ({ navigation, route }) => {
             Alert.alert("Error", "La fecha de término debe ser posterior a la fecha de inicio.");
             return false;
         }
-        
+
 
         if (!validateInput()) {
             return;
         }
-        
+
         const taskData = {
             name,
             description,
@@ -83,7 +91,7 @@ const AddTaskScreen = ({ navigation, route }) => {
         };
 
         // Llama a tu API para guardar la tarea
-        axios.post('http://192.168.1.5:8000/add-task', taskData)
+        axios.post('http://192.168.18.50:8000/add-task', taskData)
             .then(response => {
                 console.log('Tarea guardada:', response.data);
                 navigation.goBack();
@@ -219,69 +227,69 @@ const AddTaskScreen = ({ navigation, route }) => {
     );
 };
 
-    /*
-    return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Nombre de la Tarea:</Text>
-            <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="Ingrese el nombre de la tarea"
+/*
+return (
+    <View style={styles.container}>
+        <Text style={styles.label}>Nombre de la Tarea:</Text>
+        <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="Ingrese el nombre de la tarea"
+        />
+
+        <Text style={styles.label}>Descripción:</Text>
+        <TextInput
+            style={styles.input}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Ingrese la descripción de la tarea"
+            multiline
+        />
+
+        <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
+        {showStartDatePicker && (
+            <DateTimePicker
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={onChangeStartDate}
             />
+        )}
 
-            <Text style={styles.label}>Descripción:</Text>
-            <TextInput
-                style={styles.input}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Ingrese la descripción de la tarea"
-                multiline
+        <Button title="Seleccionar hora de inicio" onPress={() => setShowStartTimePicker(true)} />
+        {showStartTimePicker && (
+            <DateTimePicker
+                value={startTime}
+                mode="time"
+                display="default"
+                onChange={onChangeStartTime}
             />
+        )}
 
-            <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
-            {showStartDatePicker && (
-                <DateTimePicker
-                    value={startDate}
-                    mode="date"
-                    display="default"
-                    onChange={onChangeStartDate}
-                />
-            )}
+        <Button title="Seleccionar fecha de fin" onPress={() => setShowEndDatePicker(true)} />
+        {showEndDatePicker && (
+            <DateTimePicker
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={onChangeEndDate}
+            />
+        )}
 
-            <Button title="Seleccionar hora de inicio" onPress={() => setShowStartTimePicker(true)} />
-            {showStartTimePicker && (
-                <DateTimePicker
-                    value={startTime}
-                    mode="time"
-                    display="default"
-                    onChange={onChangeStartTime}
-                />
-            )}
+        <Button title="Seleccionar hora de fin" onPress={() => setShowEndTimePicker(true)} />
+        {showEndTimePicker && (
+            <DateTimePicker
+                value={endTime}
+                mode="time"
+                display="default"
+                onChange={onChangeEndTime}
+            />
+        )}
 
-            <Button title="Seleccionar fecha de fin" onPress={() => setShowEndDatePicker(true)} />
-            {showEndDatePicker && (
-                <DateTimePicker
-                    value={endDate}
-                    mode="date"
-                    display="default"
-                    onChange={onChangeEndDate}
-                />
-            )}
-
-            <Button title="Seleccionar hora de fin" onPress={() => setShowEndTimePicker(true)} />
-            {showEndTimePicker && (
-                <DateTimePicker
-                    value={endTime}
-                    mode="time"
-                    display="default"
-                    onChange={onChangeEndTime}
-                />
-            )}
-
-            <Button title="Guardar Tarea" onPress={handleSave} />
-        </View>
-    );
+        <Button title="Guardar Tarea" onPress={handleSave} />
+    </View>
+);
 };
 
 */

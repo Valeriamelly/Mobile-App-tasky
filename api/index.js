@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb+srv://valefat:valefat@cluster0.3qco7dw.mongodb.net/", {
+mongoose.connect("mongodb+srv://chaparro:Miguelyjeni1@cluster0.wibaw6v.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -407,6 +407,28 @@ app.put('/profile', authenticateUser, async (req, res) => {
     } catch (error) {
         console.error('Error al actualizar el perfil:', error);
         res.status(500).json({ message: 'Error al actualizar el perfil.' });
+    }
+});
+
+app.put('/update-project/:projectId', async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { name, description } = req.body;
+
+        const updatedProject = await Project.findByIdAndUpdate(
+            projectId,
+            { name, description },
+            { new: true }
+        );
+
+        if (!updatedProject) {
+            return res.status(404).json({ message: 'Proyecto no encontrado' });
+        }
+
+        res.status(200).json({ message: 'Proyecto actualizado con éxito', project: updatedProject });
+    } catch (error) {
+        console.error('Error al actualizar el proyecto:', error);
+        res.status(500).json({ message: 'Error al actualizar el proyecto' });
     }
 });
 

@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
 
     // Función para cargar proyectos
     const loadProjects = () => {
-        axios.get('http://192.168.1.5:8000/projects')
+        axios.get('http://192.168.18.50:8000/projects')
             .then(response => {
                 setProjects(response.data);
             })
@@ -39,8 +39,8 @@ const HomeScreen = ({ navigation }) => {
         return (
             <TouchableOpacity
                 style={styles.projectItem}
-                onPress={() => navigation.navigate('Project', { projectId: item._id })}
-            >
+                onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
+                >
                 <Text style={styles.projectTitle}>{item.name}</Text>
                 <Text style={styles.projectDescription}>{item.description}</Text>
                 <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>

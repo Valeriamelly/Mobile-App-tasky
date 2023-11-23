@@ -9,7 +9,7 @@ const ProjectScreen = ({ route, navigation }) => {
     const [projectData, setProjectData] = useState({ tasks: [], projectName: '' });
 
     const loadTasks = () => {
-        axios.get(`http://192.168.1.5:8000/projects/${projectId}/tasks`)
+        axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
             .then(response => {
                 setProjectData(response.data);
             })
@@ -29,7 +29,7 @@ const ProjectScreen = ({ route, navigation }) => {
     }, [navigation, projectId]);
 
     const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
-        axios.put(`http://192.168.1.5:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
+        axios.put(`http://192.168.18.50:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
             .then(() => {
                 // Actualiza el estado para reflejar el cambio
                 setProjectData(prevData => {
