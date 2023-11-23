@@ -37,15 +37,21 @@ const HomeScreen = ({ navigation }) => {
         const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
 
         return (
-            <TouchableOpacity
-                style={styles.projectItem}
-                onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
+            <View style={styles.projectItem}>
+                <TouchableOpacity
+                    style={{ flex: 1 }}
+                    onPress={() => navigation.navigate('ProjectScreen', { projectId: item._id })}
                 >
-                <Text style={styles.projectTitle}>{item.name}</Text>
-                <Text style={styles.projectDescription}>{item.description}</Text>
-                <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>
-                <AntDesign name="edit" size={24} color="black" />
-            </TouchableOpacity>
+                    <Text style={styles.projectTitle}>{item.name}</Text>
+                    <Text style={styles.projectDescription}>{item.description}</Text>
+                    <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
+                >
+                    <AntDesign name="edit" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
         );
     };
 

@@ -16,6 +16,7 @@ import AddProjectScreen from "../screens/AddProjectScreen";
 import AddTaskScreen from "../screens/AddTaskScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import UpdateProjectScreen from "../screens/UpdateProjectScreen";
+import UpdateTaskScreen from "../screens/UpdateTaskScreen";
 
 
 const StackNavigator = () => {
@@ -117,6 +118,11 @@ const StackNavigator = () => {
         <Stack.Screen 
           name="UpdateProject" 
           component={UpdateProjectScreen} 
+          options={{ headerShown: false }} // Configura las opciones según tus preferencias
+        />
+        <Stack.Screen 
+          name="UpdateTask" 
+          component={UpdateTaskScreen} 
           options={{ headerShown: false }} // Configura las opciones según tus preferencias
         />
         <Stack.Screen 

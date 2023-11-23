@@ -50,7 +50,7 @@ const ProjectScreen = ({ route, navigation }) => {
         const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
         // Formatear fecha y hora de fin
         const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
-    
+
         return (
             <View style={styles.taskCard}>
                 <Text style={styles.taskName}>{item.name}</Text>
@@ -62,13 +62,22 @@ const ProjectScreen = ({ route, navigation }) => {
                         {item.isCompleted ? 'Done' : 'Marcar como Completada'}
                     </Text>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('UpdateTask', {
+                    taskId: item._id,
+                    projectId: item.projectId,
+                    existingName: item.name,
+                    existingDescription: item.description,
+                    existingStartDate: item.startDate,
+                    existingEndDate: item.endDate
+                })}>
+                    <AntDesign name="edit" size={24} color="black" />
+                </TouchableOpacity>
             </View>
         );
     };
     return (
         <View style={styles.container}>
             <Text style={styles.projectTitle}>Proyecto {projectData.projectName}</Text>
-            <AntDesign name="edit" size={24} color="black" />
             <FlatList
                 data={projectData.tasks}
                 keyExtractor={(item) => item._id.toString()}
@@ -147,7 +156,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontWeight: 'bold'
     }
-    
+
 });
 
 export default ProjectScreen;
