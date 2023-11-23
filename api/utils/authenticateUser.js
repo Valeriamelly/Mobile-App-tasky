@@ -1,9 +1,11 @@
-//DEPRECAO
-
 const jwt = require('jsonwebtoken');
-const authControl  = require('../controllers/authenticationController')
+const crypto = require('crypto');  
 
-const secretKey = authControl.secretKey;
+const generateSecretKey = () => {
+  return crypto.randomBytes(32).toString('hex');
+};
+
+const secretKey = generateSecretKey();
 
 const authenticateUser = (req, res, next) => {
   try {
@@ -16,4 +18,4 @@ const authenticateUser = (req, res, next) => {
   }
 };
 
-module.exports = authenticateUser;
+module.exports = {authenticateUser, secretKey};

@@ -1,20 +1,12 @@
-//DEPRECAO
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 const crypto = require('crypto');  
 const User = require('../models/user');
+const { secretKey } = require('../utils/authenticateUser')
 
 
 const saltRounds = 10;
-
-// Función para generar una clave secreta
-const generateSecretKey = () => {
-    return crypto.randomBytes(32).toString('hex');
-};
-
-const secretKey = generateSecretKey();
 
 //Funcion para enviar Email al usuario
 const sendVerificationEmail = async (email, verificationToken) => {
@@ -42,7 +34,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     }
 };
 
-const register = async (req, res) => {
+exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -80,7 +72,7 @@ const register = async (req, res) => {
     }
 };
 
-const verifyEmail = async (req, res) => {
+exports.verifyEmail = async (req, res) => {
     try {
         const token = req.params.token;
 
@@ -102,7 +94,7 @@ const verifyEmail = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+exports.login = async (req, res) => {
     try {
         
         const { email, password } = req.body;
@@ -138,4 +130,3 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = secretKey, register, verifyEmail, login;
