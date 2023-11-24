@@ -3,13 +3,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';  // Ensure the correct import statement
 
 const HomeScreen = ({ navigation }) => {
     const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
 
     // Función para cargar proyectos
-    const loadProjects = () => {
-        axios.get('http://192.168.18.50:8000/projects')
+    const loadProjects = async () => {
+        const userId = await AsyncStorage.getItem("userId");
+
+        axios.get(`http://192.168.18.50:8000/projects?userId=${userId}`)
             .then(response => {
                 setProjects(response.data);
             })
@@ -20,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         loadProjects(); // Carga inicial de proyectos
-        
+
         // Listener para recargar proyectos cuando la pantalla gane foco
         const unsubscribe = navigation.addListener('focus', () => {
             loadProjects(); // Recarga proyectos cada vez que la pantalla gane foco

@@ -42,7 +42,6 @@ const UpdateTaskScreen = ({ navigation, route }) => {
             minute: startTime.getMinutes()
         }, 'America/Lima');
 
-        // Comprueba si la fecha y hora combinadas de inicio son anteriores a la fecha y hora actuales
         
         return true;
     };

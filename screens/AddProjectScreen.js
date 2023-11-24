@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';  // Ensure the correct import statement
 
 const AddProjectScreen = ({ navigation }) => {
     const [name, setName] = useState(''); // Define el estado para el nombre
@@ -23,7 +24,15 @@ const AddProjectScreen = ({ navigation }) => {
         return true;
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+
+        const userId = await AsyncStorage.getItem("userId");
+
+        if (!userId) {
+            Alert.alert("Error", "No se pudo obtener el ID del usuario");
+            setIsLoading(false); // Detener el indicador de carga
+            return;
+        }
         if (!validateInput()) {
             return;
         }
@@ -33,15 +42,18 @@ const AddProjectScreen = ({ navigation }) => {
         const projectData = {
             name: name,
             description: description,
+            userId: userId, // Incluir el userId aquí
+
         };
 
         axios.post('http://192.168.18.50:8000/add-project', projectData)
             .then(response => {
                 console.log('Proyecto guardado:', response.data);
-                navigation.goBack();
+                navigation.goBack(); // Volver a la pantalla anterior
             })
             .catch(error => {
                 console.error('Error al guardar el proyecto:', error);
+                setIsLoading(false); // Detener el indicador de carga en caso de error
             });
     };
 

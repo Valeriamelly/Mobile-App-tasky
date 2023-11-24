@@ -157,23 +157,19 @@ app.post("/login", async (req, res) => {
         const token = jwt.sign({ userId: user._id }, secretKey);
 
         // Devolver el token y el correo electrónico en la respuesta
-        res.status(200).json({ token, userEmail: user.email });
+        res.status(200).json({ token, userEmail: user.email, userId: user._id.toString() });
+
     } catch (error) {
         res.status(500).json({ error: "Login Failed" });
     }
-  });
+});
 
 // Ruta para crear un nuevo proyecto
 app.post('/add-project', async (req, res) => {
     try {
-        const { name, description } = req.body;
-
-        // Crear un nuevo proyecto
-        const newProject = new Project({ name, description });
-
-        // Guardar el proyecto en la base de datos
+        const { name, description, userId } = req.body;
+        const newProject = new Project({ name, description, userId });
         await newProject.save();
-
         res.status(201).json({ message: 'Proyecto creado exitosamente', project: newProject });
     } catch (error) {
         console.error('Error al crear el proyecto:', error);
@@ -183,8 +179,14 @@ app.post('/add-project', async (req, res) => {
 
 app.get('/projects', async (req, res) => {
     try {
-        // Consulta agregada para obtener los proyectos con las fechas de inicio y fin
+        const userId = req.query.userId; // Obtener el userId desde los parámetros de consulta
+
+        if (!userId) {
+            return res.status(400).json({ message: 'Falta el ID del usuario' });
+        }
+
         const projects = await Project.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
             {
                 $lookup: {
                     from: 'tasks', // Asegúrate de que el nombre de la colección sea correcto
@@ -208,6 +210,7 @@ app.get('/projects', async (req, res) => {
                 }
             }
         ]);
+
         res.status(200).json(projects);
     } catch (error) {
         console.error('Error al obtener los proyectos:', error);

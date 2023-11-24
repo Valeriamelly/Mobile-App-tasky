@@ -9,7 +9,11 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // Puedes agregar más campos según sea necesario
+    userId: { // Agregar esta línea
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 });
 
 const Project = mongoose.model('Project', projectSchema);

@@ -33,8 +33,13 @@ const LoginScreen = () => {
         console.log(response);
         const token = response.data.token;
         const userEmail = response.data.userEmail; // Suponiendo que obtienes el correo electrónico en la respuesta
+        const userId = response.data.userId; // Asegúrate de que esto esté siendo enviado desde el backend
+        console.log(userId);
+
         AsyncStorage.setItem("authToken", token);
         AsyncStorage.setItem("userEmail", userEmail); // Guardar el correo electrónico
+        AsyncStorage.setItem("userId", userId); // Guardar el ID del usuario
+
         navigation.replace("Main");
       })
       .catch((error) => {
