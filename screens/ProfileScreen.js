@@ -17,6 +17,7 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // Nuevo estado para la confirmación de la contraseña
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [isFetching, setIsFetching] = useState(true); // Para manejar la carga de datos
@@ -40,11 +41,12 @@ const ProfileScreen = () => {
           Authorization: `Bearer ${token}`, // Enviar el token en el header 
         },
       });
-      const { name, email } = response.data;
+      const { name, email, phoneNumber } = response.data;
       setName(name);
       setEmail(email);
+      setPhoneNumber(phoneNumber);
       setGreeting(`Tasky de ${name}!`);
-    
+
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
       Alert.alert("Error", "No se pudo obtener la información del perfil.");
@@ -79,6 +81,7 @@ const ProfileScreen = () => {
         {
           name,
           password,
+          phoneNumber, // Agrega el número de teléfono al cuerpo de la solicitud
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -151,7 +154,13 @@ const ProfileScreen = () => {
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
-
+          <Text style={styles.label}>Numero de Telefono</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Número de Teléfono"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
           <Pressable
             onPress={handleUpdateProfile} // Actualiza el perfil en el servidor
             style={styles.updateButton}
@@ -161,7 +170,7 @@ const ProfileScreen = () => {
               {isLoading ? 'Actualizando...' : 'Actualizar Perfil'}
             </Text>
           </Pressable>
-          
+
         </>
       )}
 

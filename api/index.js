@@ -7,7 +7,8 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10; // Puedes aumentar el número de rondas para un hash más seguro
 const twilio = require('twilio');
 const accountSid = 'AC9f5c5a71cf0e0a171ffb4e4329341b4c';
-const authToken = 'edbe1493bd1a98e271c67a51652df6eb';
+const authToken = '396c661ab35f9bd94fd180037d5b4697';
+
 
 const client = new twilio(accountSid, authToken);
 
@@ -302,7 +303,7 @@ const enviarRecordatorioTarea = async (tarea) => {
             from: '"Tasky G2" <grupitogpt4@gmail.com>', // Nombre personalizado y dirección de correo
             to: usuario.email,
             subject: "Recordatorio de Tarea Próxima a Vencer",
-            text: `Hola! Solo un recordatorio de que tu tarea "${tarea.name}" está programada para terminar en una hora.`,
+            text: `Hola ${usuario.name}!\n\nQueremos recordarte que tu tarea "${tarea.name}" en el proyecto "${proyecto.name}" está programada para terminar en una hora.\n\nDescripción de la tarea: ${tarea.description}\nFecha de inicio: ${tarea.startDate.toLocaleString()}\nFecha de vencimiento: ${tarea.endDate.toLocaleString()}\n\n¡Recuerda completarla a tiempo para mantener tu productividad alta!`
         };
 
         try {
@@ -312,17 +313,24 @@ const enviarRecordatorioTarea = async (tarea) => {
             console.error("Error enviando recordatorio de tarea:", error);
         }
 
-        const numeroPrueba = 'whatsapp:+51960904256'; // Reemplaza con un número para la prueba
+        const numeroDestino = `whatsapp:+51${usuario.phoneNumber}`;
+        console.log(numeroDestino);
         const numeroTwilio = 'whatsapp:+14155238886'; // Tu número de WhatsApp de Twilio
 
         // Personaliza el mensaje de WhatsApp
         const mensajeWhatsApp = `*Recordatorio de Tarea Próxima a Vencer*\n\nHola! Solo un recordatorio de que tu tarea *"${tarea.name}"* en el proyecto *"${proyecto.name}"* está programada para terminar en una hora.\n\nDescripción de la tarea: ${tarea.description}\nFecha de vencimiento: ${tarea.endDate.toLocaleString()}`;
 
+        // Verificar si el usuario tiene un número de teléfono definido
+        if (!usuario.phoneNumber) {
+            console.error("Usuario no tiene un número de teléfono definido para recibir recordatorios.");
+            return;
+        }
+
         client.messages
             .create({
                 body: mensajeWhatsApp,
                 from: numeroTwilio,
-                to: numeroPrueba
+                to: numeroDestino
             })
             .then(message => console.log(message.sid))
             .catch(error => console.error('Error al enviar mensaje:', error));
@@ -392,17 +400,15 @@ const authenticateUser = (req, res, next) => {
 // Ruta para obtener el perfil del usuario, utiliza el middleware authenticateUser
 app.get('/profile', authenticateUser, async (req, res) => {
     try {
-        // req.userId es proporcionado por el middleware authenticateUser
-        const user = await User.findById(req.userId).select('-password'); // Excluir la contraseña por seguridad
-
+        const user = await User.findById(req.userId).select('-password');
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado.' });
         }
 
-        // Si se encuentra el usuario, devolver los datos (sin incluir la contraseña)
         res.json({
             name: user.name,
-            email: user.email // y cualquier otro campo que quieras devolver
+            email: user.email,
+            phoneNumber: user.phoneNumber // Añade esta línea
         });
     } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
@@ -412,31 +418,23 @@ app.get('/profile', authenticateUser, async (req, res) => {
 
 // Ruta para actualizar el perfil del usuario
 app.put('/profile', authenticateUser, async (req, res) => {
-    // req.userId ya está disponible gracias al middleware authenticateUser
-
-
     try {
-        const { name, password } = req.body;
-        // Buscar al usuario por ID
+        const { name, password, phoneNumber } = req.body;
         const user = await User.findById(req.userId);
 
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado.' });
         }
 
-        // Actualizar los campos necesarios
         if (name) user.name = name;
+        if (phoneNumber) user.phoneNumber = phoneNumber; // Actualiza el número de teléfono
 
-        // Asegúrate de que la contraseña no sea una cadena vacía antes de hashearla
         if (password && password.trim() !== '') {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
             user.password = hashedPassword;
         }
 
-        // Guardar el usuario actualizado en la base de datos
         await user.save();
-
-        // Enviar una respuesta exitosa
         res.json({ message: 'Perfil actualizado con éxito.' });
     } catch (error) {
         console.error('Error al actualizar el perfil:', error);

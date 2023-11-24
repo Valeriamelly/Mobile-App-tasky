@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   verificationToken: String,
+  phoneNumber: {
+    type: String,
+    default: '', // El valor predeterminado es una cadena vacía
+  },
+  
 });
 
 const User = mongoose.model('User',userSchema);
