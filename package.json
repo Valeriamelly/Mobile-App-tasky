@@ -27,7 +27,8 @@
     "react-native-config": "^1.5.1",
     "react-native-material-menu": "^2.0.0",
     "react-native-safe-area-context": "4.6.3",
-    "react-native-screens": "~3.22.0"
+    "react-native-screens": "~3.22.0",
+    "twilio": "^4.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

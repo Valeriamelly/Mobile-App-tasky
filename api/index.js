@@ -5,6 +5,13 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Puedes aumentar el número de rondas para un hash más seguro
+const twilio = require('twilio');
+const accountSid = 'AC9f5c5a71cf0e0a171ffb4e4329341b4c';
+const authToken = 'edbe1493bd1a98e271c67a51652df6eb';
+
+const client = new twilio(accountSid, authToken);
+
+
 
 const app = express();
 const port = 8000;
@@ -304,6 +311,21 @@ const enviarRecordatorioTarea = async (tarea) => {
         } catch (error) {
             console.error("Error enviando recordatorio de tarea:", error);
         }
+
+        const numeroPrueba = 'whatsapp:+51960904256'; // Reemplaza con un número para la prueba
+        const numeroTwilio = 'whatsapp:+14155238886'; // Tu número de WhatsApp de Twilio
+
+        // Personaliza el mensaje de WhatsApp
+        const mensajeWhatsApp = `*Recordatorio de Tarea Próxima a Vencer*\n\nHola! Solo un recordatorio de que tu tarea *"${tarea.name}"* en el proyecto *"${proyecto.name}"* está programada para terminar en una hora.\n\nDescripción de la tarea: ${tarea.description}\nFecha de vencimiento: ${tarea.endDate.toLocaleString()}`;
+
+        client.messages
+            .create({
+                body: mensajeWhatsApp,
+                from: numeroTwilio,
+                to: numeroPrueba
+            })
+            .then(message => console.log(message.sid))
+            .catch(error => console.error('Error al enviar mensaje:', error));
     }
 };
 
