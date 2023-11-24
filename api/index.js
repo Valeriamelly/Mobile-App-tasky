@@ -222,20 +222,16 @@ app.get('/projects', async (req, res) => {
 // Ruta para crear una nueva tarea
 app.post('/add-task', async (req, res) => {
     try {
-        const { name, description, projectId, startDate, endDate, userEmail } = req.body;
-
-        // Crear una nueva tarea con fechas de inicio y fin y correo electrónico del usuario
-        const newTask = new Task({ name, description, projectId, startDate, endDate, userEmail });
-
-        // Guardar la tarea en la base de datos
+        const { name, description, projectId, startDate, endDate } = req.body;
+        const newTask = new Task({ name, description, projectId, startDate, endDate });
         await newTask.save();
-
         res.status(201).json({ message: 'Tarea creada exitosamente', task: newTask });
     } catch (error) {
         console.error('Error al crear la tarea:', error);
         res.status(500).json({ message: 'Error al crear la tarea' });
     }
 });
+
 
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {
@@ -281,9 +277,23 @@ const enviarRecordatorioTarea = async (tarea) => {
             },
         });
 
+        // Encuentra el proyecto asociado con la tarea
+        const proyecto = await Project.findById(tarea.projectId);
+        if (!proyecto) {
+            console.error("Proyecto no encontrado para la tarea:", tarea._id);
+            return;
+        }
+
+        // Encuentra el usuario asociado con el proyecto
+        const usuario = await User.findById(proyecto.userId);
+        if (!usuario || !usuario.email) {
+            console.error("Usuario no encontrado o sin correo electrónico para el proyecto:", proyecto._id);
+            return;
+        }
+
         const mailOptions = {
             from: '"Tasky G2" <grupitogpt4@gmail.com>', // Nombre personalizado y dirección de correo
-            to: tarea.userEmail, // Asegúrate de que 'userEmail' sea un campo en tu modelo de tarea
+            to: usuario.email,
             subject: "Recordatorio de Tarea Próxima a Vencer",
             text: `Hola! Solo un recordatorio de que tu tarea "${tarea.name}" está programada para terminar en una hora.`,
         };
@@ -308,7 +318,6 @@ cron.schedule('* * * * *', async () => {
     // Encuentra tareas que terminen exactamente dentro de una hora y aún no se haya enviado un recordatorio
     const tareas = await Task.find({
         isCompleted: false,
-        userEmail: { $exists: true, $ne: null },
         reminderSent: false
     });
 

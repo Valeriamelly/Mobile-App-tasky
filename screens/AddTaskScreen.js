@@ -68,7 +68,6 @@ const AddTaskScreen = ({ navigation, route }) => {
         const combinedEndDate = new Date(endDate);
         combinedEndDate.setHours(endTime.getHours());
         combinedEndDate.setMinutes(endTime.getMinutes());
-        const userEmail = await AsyncStorage.getItem("userEmail");
 
         // Validar que la fecha de término sea posterior a la fecha de inicio
         if (moment(combinedEndDate).isSameOrBefore(moment(combinedStartDate))) {
@@ -87,7 +86,6 @@ const AddTaskScreen = ({ navigation, route }) => {
             projectId,
             startDate: combinedStartDate,
             endDate: combinedEndDate,
-            userEmail
         };
 
         // Llama a tu API para guardar la tarea

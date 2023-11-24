@@ -23,10 +23,6 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    userEmail: { // Campo agregado para almacenar el correo electrónico del usuario
-        type: String,
-        required: true
-    }, 
     reminderSent: {
         type: Boolean,
         default: false
