@@ -151,10 +151,9 @@ const LoginScreen = () => {
             justifyContent: "space-between",
           }}
         >
-          <Text>Recuérdame</Text>
 
-          <Text style={{ color: "#007FFF", fontWeight: "500" }}>
-            Olvidé mi contraseña
+          <Text onPress={() => navigation.navigate('RequestResetPassword')}>
+              Olvidé mi contraseña
           </Text>
         </View>
 

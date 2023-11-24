@@ -18,12 +18,13 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  verificationToken: String,
   phoneNumber: {
     type: String,
     default: '', // El valor predeterminado es una cadena vacía
   },
-  
+  verificationToken: String,
+  resetPasswordToken: String, // Para el restablecimiento de la contraseña
+  resetPasswordExpires: Date, // Fecha de expiración del token de restablecimiento
 });
 
 const User = mongoose.model('User',userSchema);

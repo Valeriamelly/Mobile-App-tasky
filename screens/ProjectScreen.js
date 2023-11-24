@@ -18,6 +18,18 @@ const ProjectScreen = ({ route, navigation }) => {
             });
     };
 
+    // Función para eliminar una tarea específica
+    const deleteTask = (taskId) => {
+        axios.delete(`http://192.168.18.50:8000/tasks/${taskId}`)
+            .then(response => {
+                // Recargar las tareas después de eliminar
+                loadTasks(); // Asegúrate de tener una función que recargue las tareas
+            })
+            .catch(error => {
+                console.error('Error al eliminar la tarea:', error);
+            });
+    };
+
     useEffect(() => {
         loadTasks(); // Carga inicial de tareas
 
@@ -71,6 +83,9 @@ const ProjectScreen = ({ route, navigation }) => {
                     existingEndDate: item.endDate
                 })}>
                     <AntDesign name="edit" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteTask(item._id)}>
+                    <AntDesign name="delete" size={24} color="red" />
                 </TouchableOpacity>
             </View>
         );

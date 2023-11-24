@@ -21,6 +21,18 @@ const HomeScreen = ({ navigation }) => {
             });
     };
 
+    const deleteProject = (projectId) => {
+        // Aquí llamarás a tu API para eliminar el proyecto
+        axios.delete(`http://192.168.18.50:8000/projects/${projectId}`)
+            .then(response => {
+                // Recargar los proyectos después de eliminar
+                loadProjects();
+            })
+            .catch(error => {
+                console.error('Error al eliminar el proyecto:', error);
+            });
+    };
+
     useEffect(() => {
         loadProjects(); // Carga inicial de proyectos
 
@@ -53,6 +65,10 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
                 >
                     <AntDesign name="edit" size={24} color="black" />
+                    
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteProject(item._id)}>
+                    <AntDesign name="delete" size={24} color="red" />
                 </TouchableOpacity>
             </View>
         );

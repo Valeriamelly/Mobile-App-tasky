@@ -488,3 +488,115 @@ app.put('/update-task/:taskId', async (req, res) => {
 });
 
 
+// Ruta para eliminar un proyecto
+app.delete('/projects/:projectId', async (req, res) => {
+    try {
+        const { projectId } = req.params;
+
+        // Opcional: Verificar si el proyecto existe antes de intentar eliminarlo
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Proyecto no encontrado.' });
+        }
+
+        // Eliminar el proyecto
+        await Project.findByIdAndDelete(projectId);
+
+        res.json({ message: 'Proyecto eliminado con éxito.' });
+    } catch (error) {
+        console.error('Error al eliminar el proyecto:', error);
+        res.status(500).json({ message: 'Error al eliminar el proyecto.' });
+    }
+});
+
+// Ruta para eliminar una tarea específica
+app.delete('/tasks/:taskId', async (req, res) => {
+    try {
+        const { taskId } = req.params;
+
+        // Opcional: Verificar si la tarea existe antes de intentar eliminarla
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Tarea no encontrada.' });
+        }
+
+        // Eliminar la tarea
+        await Task.findByIdAndDelete(taskId);
+
+        res.json({ message: 'Tarea eliminada con éxito.' });
+    } catch (error) {
+        console.error('Error al eliminar la tarea:', error);
+        res.status(500).json({ message: 'Error al eliminar la tarea.' });
+    }
+});
+
+// Ruta para solicitar restablecimiento de contraseña y enviar código de verificación
+app.post('/request-reset-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (user) {
+            // Generar código de verificación de 4 valores alfanuméricos
+            const verificationToken = Math.random().toString(36).slice(2, 6).toUpperCase();
+
+            // Guardar el código en el campo verificationToken y la fecha de expiración
+            user.verificationToken = verificationToken;
+            user.resetPasswordExpires = Date.now() + 3600000; // El código expira en 1 hora
+
+
+            await user.save();
+
+            // Envía el código de verificación al correo del usuario
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: "grupitogpt4@gmail.com",
+                    pass: "khog vovx kkey blhf",
+                },
+            });
+
+            const mailOptions = {
+                from: '"Tasky G2" <grupitogpt4@gmail.com>',
+                to: user.email,
+                subject: 'Restablecimiento de contraseña',
+                text: `Se ha solicitado un restablecimiento de contraseña para tu cuenta.\n\n
+                        Tu código de verificación es: ${verificationToken}\n\n
+                        Por favor, nota que este código será válido solo por 60 minutos.`,
+            };
+            
+            await transporter.sendMail(mailOptions);
+            
+            res.json({ message: 'Código de verificación enviado correctamente.' });
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+    } catch (error) {
+        console.error('Error al solicitar código de verificación:', error);
+        res.status(500).json({ message: 'Error al procesar la solicitud.' });
+    }
+});
+// Ruta para verificar el código de verificación y restablecer la contraseña
+app.post('/reset-password', async (req, res) => {
+    try {
+        const { verificationToken, newPassword } = req.body;
+        const user = await User.findOne({
+            verificationToken: verificationToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Código de verificación inválido o expirado.' });
+        }
+
+        user.password = await bcrypt.hash(newPassword, saltRounds);
+        user.verificationToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({ message: 'Contraseña restablecida exitosamente.' });
+    } catch (error) {
+        console.error('Error al restablecer la contraseña:', error);
+        res.status(500).json({ message: 'Error al procesar la solicitud.' });
+    }
+});

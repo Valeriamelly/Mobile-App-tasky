@@ -17,7 +17,8 @@ import AddTaskScreen from "../screens/AddTaskScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import UpdateProjectScreen from "../screens/UpdateProjectScreen";
 import UpdateTaskScreen from "../screens/UpdateTaskScreen";
-
+import RequestResetPasswordScreen from "../screens/RequestResetPasswordScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -130,6 +131,16 @@ const StackNavigator = () => {
         component={AddTaskScreen} 
         // Opciones adicionales como `options` si son necesarias
       />
+      <Stack.Screen
+          name="RequestResetPassword"
+          component={RequestResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
