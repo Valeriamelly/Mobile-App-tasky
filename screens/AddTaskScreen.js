@@ -42,7 +42,7 @@ const AddTaskScreen = ({ navigation, route }) => {
         }, 'America/Lima');
 
         // Comprueba si la fecha y hora combinadas de inicio son anteriores a la fecha y hora actuales
-        if (combinedStartDateTime.isSameOrBefore(moment())) {
+        if (combinedStartDateTime.isBefore(moment(), 'minute')) {
             Alert.alert("Error", "La fecha y hora de inicio deben ser iguales o mayores a la fecha y hora actuales.");
             return false;
         }
