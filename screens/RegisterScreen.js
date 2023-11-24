@@ -31,7 +31,7 @@ const RegisterScreen = () => {
     };
   
   axios
-      .post("http://192.168.1.8:8000/register", user) 
+      .post("http://192.168.1.11:8000/register", user) 
       .then((response) => {
         console.log(response);
         Alert.alert(

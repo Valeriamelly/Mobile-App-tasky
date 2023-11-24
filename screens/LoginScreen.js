@@ -28,7 +28,7 @@ const LoginScreen = () => {
     };
 
     axios
-      .post("http://192.168.1.8:8000/login", user)
+      .post("http://192.168.1.11:8000/login", user)
       .then((response) => {
         console.log(response);
         const token = response.data.token;
@@ -146,8 +146,8 @@ const LoginScreen = () => {
         >
           <Text>Recuérdame</Text>
 
-          <Text style={{ color: "#007FFF", fontWeight: "500" }}>
-            Olvidé mi contraseña
+          <Text onPress={() => navigation.navigate('RequestResetPassword')}>
+              Olvidé mi contraseña
           </Text>
         </View>
 

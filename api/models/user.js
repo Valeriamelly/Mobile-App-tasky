@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  verificationToken: String,
+  verificationToken: String,  // Para la verificación del correo electrónico
+  resetPasswordToken: String, // Para el restablecimiento de la contraseña
+  resetPasswordExpires: Date, // Fecha de expiración del token de restablecimiento
 });
 
 const User = mongoose.model('User',userSchema);

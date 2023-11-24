@@ -10,7 +10,7 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
 
     
     const loadTasks = () => {
-        axios.get(`http://192.168.1.8:8000/projects/${projectId}/tasks`)
+        axios.get(`http://192.168.1.11:8000/projects/${projectId}/tasks`)
             .then(response => {
                 setTasks(response.data);
             })
@@ -18,6 +18,17 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
                 console.error('Error al obtener las tareas:', error);
             });
     };
+    // Función para eliminar una tarea específica
+    const deleteTask = (taskId) => {
+        axios.delete(`http://192.168.1.11:8000/tasks/${taskId}`)
+            .then(response => {
+                // Recargar las tareas después de eliminar
+                loadTasks(); // Asegúrate de tener una función que recargue las tareas
+            })
+            .catch(error => {
+                console.error('Error al eliminar la tarea:', error);
+            });
+    };   
 
     useEffect(() => {
         loadTasks(); // Carga inicial de tareas
@@ -29,15 +40,46 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
         return unsubscribe; // Desuscripción al desmontar
     }, [navigation, projectId]);
 
-    const renderTask = ({ item }) => (
-        <View style={styles.taskCard}>
-            <Text style={styles.taskName}>{item.name}</Text>
-            <Text style={styles.taskDescription}>{item.description}</Text>
+    const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
+        axios.put(`http://192.168.1.11:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
+            .then(() => {
+                // Actualiza el estado para reflejar el cambio
+                setProjectData(prevData => {
+                    const updatedTasks = prevData.tasks.map(task => {
+                        if (task._id === taskId) {
+                            return { ...task, isCompleted: !isCurrentlyCompleted };
+                        }
+                        return task;
+                    });
+                    return { ...prevData, tasks: updatedTasks };
+                });
+            })
+            .catch(error => console.error('Error al actualizar el estado de la tarea:', error));
+    };
 
-            {/* Puedes incluir o excluir fechas según tu modelo de tarea */}
-        </View>
-    );
-
+    const renderTask = ({ item }) => {
+        // Formatear fecha y hora de inicio
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
+        // Formatear fecha y hora de fin
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
+    
+        return (
+            <View style={styles.taskCard}>
+                <Text style={styles.taskName}>{item.name}</Text>
+                <Text style={styles.taskDescription}>{item.description}</Text>
+                <Text style={styles.taskDate}>Inicio: {formattedStartDate}</Text>
+                <Text style={styles.taskDate}>Fin: {formattedEndDate}</Text>
+                <TouchableOpacity onPress={() => toggleTaskCompletion(item._id, item.isCompleted)}>
+                    <Text style={item.isCompleted ? styles.completed : styles.markComplete}>
+                        {item.isCompleted ? 'Done' : 'Marcar como Completada'}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deleteTask(item._id)}>
+                    <AntDesign name="delete" size={24} color="red" />
+                </TouchableOpacity>
+            </View>
+        );
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.projectTitle}>Proyecto {projectId}</Text>
@@ -52,6 +94,8 @@ const ProjectScreen = ({ route, navigation }) => { // Incluye navigation aquí
                 style={styles.floatingButton}>
                 <AntDesign name="plus" size={24} color="white" />
             </TouchableOpacity>
+            
+            
         </View>
     );
 };
@@ -95,6 +139,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        
+        
     },
     taskName: {
         fontSize: 18,
@@ -106,6 +152,20 @@ const styles = StyleSheet.create({
     taskDate: {
         color: 'gray',
     },
+    markComplete: {
+        color: 'blue',
+        marginTop: 10,
+        fontWeight: 'bold'
+    },
+    completed: {
+        color: 'green', // o cualquier color que prefieras
+        marginTop: 10,
+        fontWeight: 'bold'
+    },
+    deleteIcon: {
+        padding: 10,
+    },
+    
 });
 
 export default ProjectScreen;

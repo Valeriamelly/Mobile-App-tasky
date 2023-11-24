@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
 
     // Función para cargar proyectos
     const loadProjects = () => {
-        axios.get('http://192.168.1.8:8000/projects')
+        axios.get('http://192.168.1.11:8000/projects')
             .then(response => {
                 setProjects(response.data);
             })
@@ -18,6 +18,18 @@ const HomeScreen = ({ navigation }) => {
             });
     };
 
+    const deleteProject = (projectId) => {
+        // Aquí llamarás a tu API para eliminar el proyecto
+        axios.delete(`http://192.168.1.11:8000/projects/${projectId}`)
+            .then(response => {
+                // Recargar los proyectos después de eliminar
+                loadProjects();
+            })
+            .catch(error => {
+                console.error('Error al eliminar el proyecto:', error);
+            });
+    };
+    
     useEffect(() => {
         loadProjects(); // Carga inicial de proyectos
         
@@ -29,17 +41,29 @@ const HomeScreen = ({ navigation }) => {
         return unsubscribe;
     }, [navigation]);
 
+    
+    const renderProject = ({ item }) => {
+        // Formatear fecha y hora de inicio
+        const formattedStartDate = item.startDate ? new Date(item.startDate).toLocaleString() : 'Sin fecha y hora';
+        // Formatear fecha y hora de fin
+        const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
 
-    const renderProject = ({ item }) => (
-        <TouchableOpacity
-            style={styles.projectItem}
-            onPress={() => navigation.navigate('Project', { projectId: item._id })}
-        >
-            <Text style={styles.projectTitle}>{item.name}</Text>
-            <Text style={styles.projectDescription}>{item.description}</Text>
-            <AntDesign name="edit" size={24} color="black" />
-        </TouchableOpacity>
-    );
+        return (
+            <TouchableOpacity
+                style={styles.projectItem}
+                onPress={() => navigation.navigate('Project', { projectId: item._id })}
+            >
+                <Text style={styles.projectTitle}>{item.name}</Text>
+                <Text style={styles.projectDescription}>{item.description}</Text>
+                <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>
+                <AntDesign name="edit" size={24} color="black" />
+                <TouchableOpacity onPress={() => deleteProject(item._id)}>
+                    <AntDesign name="delete" size={24} color="red" />
+                </TouchableOpacity>
+
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -48,20 +72,6 @@ const HomeScreen = ({ navigation }) => {
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderProject}
             />
-            {menuVisible && (
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate('AddTask')}>
-                        <Text>Crear Tarea</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate('AddProject')}>
-                        <Text>Crear Proyecto</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
             <TouchableOpacity
                 onPress={() => setMenuVisible(!menuVisible)}
                 style={styles.floatingButton}>

@@ -35,8 +35,8 @@ const AddProjectScreen = ({ navigation }) => {
             name: name,
             description: description,
         };
-        
-        axios.post('http://192.168.1.8:8000/add-project', projectData)
+
+        axios.post('http://192.168.1.11:8000/add-project', projectData)
             .then(response => {
                 Alert.alert("Éxito", "Proyecto guardado correctamente.");
                 setName('');

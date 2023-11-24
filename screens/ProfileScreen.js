@@ -34,7 +34,7 @@ const ProfileScreen = () => {
         return;
       }
       // backend valida el token y devuelve la información del usuario
-      const response = await axios.get("http://192.168.1.8:8000/profile", {
+      const response = await axios.get("http://192.168.1.11:8000/profile", {
         headers: {
           //Esto es esencial para validar y permitir el acceso a la información del perfil.
           Authorization: `Bearer ${token}`, // Enviar el token en el header 
@@ -75,7 +75,7 @@ const ProfileScreen = () => {
 
       // Realizar la solicitud para actualizar los datos del usuario
       await axios.put(
-        "http://192.168.1.8:8000/profile",
+        "http://192.168.1.11:8000/profile",
         {
           name,
           password,

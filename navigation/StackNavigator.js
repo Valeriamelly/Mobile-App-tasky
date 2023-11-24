@@ -15,6 +15,8 @@ import ProjectScreen from "../screens/ProjectScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddProjectScreen from "../screens/AddProjectScreen";
 import AddTaskScreen from "../screens/AddTaskScreen";
+import RequestResetPasswordScreen from "../screens/RequestResetPasswordScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 
 
 const StackNavigator = () => {
@@ -116,8 +118,18 @@ const StackNavigator = () => {
         <Stack.Screen 
         name="AddTask" 
         component={AddTaskScreen} 
-        // Opciones adicionales como `options` si son necesarias
-      />
+        options={{ headerShown: false}} // Configura las opciones según tus preferencias
+        />
+         <Stack.Screen
+          name="RequestResetPassword"
+          component={RequestResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
