@@ -72,8 +72,8 @@ const HomeScreen = ({ navigation }) => {
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderProject}
             />
-            <TouchableOpacity
-                onPress={() => setMenuVisible(!menuVisible)}
+             <TouchableOpacity
+                onPress={() => navigation.navigate('AddProject')}
                 style={styles.floatingButton}>
                 <AntDesign name="plus" size={24} color="white" />
             </TouchableOpacity>
@@ -82,6 +82,10 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    projectDate: {
+        fontSize: 14,
+        color: 'grey',
+    },
     floatingButton: {
         backgroundColor: '#1ba8ed', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón

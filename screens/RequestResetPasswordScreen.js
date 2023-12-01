@@ -28,7 +28,6 @@ const RequestResetPasswordScreen = ({ navigation }) => {
           "Se ha enviado un correo con las instrucciones para restablecer tu contraseña."
         );
         setEmail("");
-        //navigation.goBack();
         navigation.navigate("ResetPassword"); // Después de enviar la solicitud, navega a ResetPasswordScreen
 
       })

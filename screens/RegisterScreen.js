@@ -41,6 +41,8 @@ const RegisterScreen = () => {
         setName("");
         setEmail("");
         setPassword("");
+        navigation.navigate('Login'); //regresar a Login
+
       })
       .catch((error) => {
         Alert.alert(
@@ -182,7 +184,6 @@ const RegisterScreen = () => {
             justifyContent: "space-between",
           }}
         >
-          <Text>Recuérdame</Text>
 
           <Text style={{ color: "#007FFF", fontWeight: "500" }}>
             Olvidé mi contraseña
