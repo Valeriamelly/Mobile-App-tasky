@@ -240,6 +240,45 @@ app.post('/add-task', async (req, res) => {
     }
 });
 
+//Ruta oara obtener las tareas de un usuario
+
+app.get('/tasks/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Buscar los proyectos del usuario
+        const projects = await Project.find({ userId: userId });
+
+        // Obtener los IDs de los proyectos
+        const projectIds = projects.map(project => project._id);
+
+        // Buscar las tareas de los proyectos del usuario
+        const tasks = await Task.find({ projectId: { $in: projectIds } });
+
+        res.status(200).json(tasks);
+    } catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).json({ message: 'Error al obtener las tareas' });
+    }
+});
+
+
+// Ruta para obtener todas las tareas   
+app.get('/tasks', async (req, res) => {
+    try {
+        const tasks = await Task.find();
+        res.status(200).json(tasks);
+    }
+    catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).json({ message: 'Error al obtener las tareas' });
+    }
+});
+
+
+
+
+
 
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {

@@ -19,6 +19,7 @@ import UpdateProjectScreen from "../screens/UpdateProjectScreen";
 import UpdateTaskScreen from "../screens/UpdateTaskScreen";
 import RequestResetPasswordScreen from "../screens/RequestResetPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
+import CalendarView from "../screens/CalendarView";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -43,6 +44,7 @@ const StackNavigator = () => {
               ),
           }}
         />
+
         <Tab.Screen
           name="Project"
           component={ProjectScreen} //antes ibas HomeScreen
@@ -59,6 +61,23 @@ const StackNavigator = () => {
               ),
           }}
         />
+        <Tab.Screen
+          name="CalendarView"
+          component={CalendarView} //antes ibas HomeScreen
+          options={{
+            tabBarLabel: "CalendarView",
+            tabBarLabelStyle: { color: "#008E97" },
+            headerShown: false,
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <FontAwesome5 name="tasks" size={30} color="#008E97" />
+
+              ) : (
+                <FontAwesome5 name="tasks" size={30} color="black" />
+              ),
+          }}
+        />
+
         <Tab.Screen
           name="Profile"
           component={ProfileScreen}
@@ -85,7 +104,7 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        
+
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -114,24 +133,24 @@ const StackNavigator = () => {
         <Stack.Screen
           name="AddProject"
           component={AddProjectScreen}
-          options={{ headerShown: false}} // Configura las opciones según tus preferencias
-        />
-        <Stack.Screen 
-          name="UpdateProject" 
-          component={UpdateProjectScreen} 
           options={{ headerShown: false }} // Configura las opciones según tus preferencias
         />
-        <Stack.Screen 
-          name="UpdateTask" 
-          component={UpdateTaskScreen} 
+        <Stack.Screen
+          name="UpdateProject"
+          component={UpdateProjectScreen}
           options={{ headerShown: false }} // Configura las opciones según tus preferencias
         />
-        <Stack.Screen 
-        name="AddTask" 
-        component={AddTaskScreen} 
+        <Stack.Screen
+          name="UpdateTask"
+          component={UpdateTaskScreen}
+          options={{ headerShown: false }} // Configura las opciones según tus preferencias
+        />
+        <Stack.Screen
+          name="AddTask"
+          component={AddTaskScreen}
         // Opciones adicionales como `options` si son necesarias
-      />
-      <Stack.Screen
+        />
+        <Stack.Screen
           name="RequestResetPassword"
           component={RequestResetPasswordScreen}
           options={{ headerShown: false }}
@@ -139,6 +158,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="ResetPassword"
           component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CalendarView"
+          component={CalendarView}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
