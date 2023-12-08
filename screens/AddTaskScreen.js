@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment-timezone';
 
 const AddTaskScreen = ({ navigation, route }) => {
@@ -23,12 +22,12 @@ const AddTaskScreen = ({ navigation, route }) => {
             Alert.alert("Error", "Por favor, rellena todos los campos.");
             return false;
         }
-        if (name.length < 8) {
-            Alert.alert("Error", "El nombre de la tarea debe tener al menos 8 caracteres.");
+        if (name.length > 25) {
+            Alert.alert("Error", "El nombre de la tarea debe tener máximo 25 caracteres.");
             return false;
         }
-        if (description.length < 10) {
-            Alert.alert("Error", "La descripción debe tener al menos 10 caracteres.");
+        if (description.length > 50) {
+            Alert.alert("Error", "La descripción debe tener máximo 50 caracteres.");
             return false;
         }
         // Combina la fecha y la hora de inicio para la validación
@@ -89,7 +88,7 @@ const AddTaskScreen = ({ navigation, route }) => {
         };
 
         // Llama a tu API para guardar la tarea
-        axios.post('http://192.168.18.50:8000/add-task', taskData)
+        axios.post('http://192.168.1.7:8000/add-task', taskData)
             .then(response => {
                 console.log('Tarea guardada:', response.data);
                 navigation.goBack();
@@ -177,6 +176,7 @@ const AddTaskScreen = ({ navigation, route }) => {
                     mode="time"
                     display="default"
                     onChange={onChangeStartTime}
+                    
                 />
             )}
 
@@ -187,6 +187,7 @@ const AddTaskScreen = ({ navigation, route }) => {
                         value={`Fecha de fin: ${formatDate(endDate)}`}
                         placeholder="Seleccionar fecha de fin"
                         editable={false}
+                        
                     />
                 </View>
             </TouchableOpacity>
@@ -225,77 +226,12 @@ const AddTaskScreen = ({ navigation, route }) => {
     );
 };
 
-/*
-return (
-    <View style={styles.container}>
-        <Text style={styles.label}>Nombre de la Tarea:</Text>
-        <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Ingrese el nombre de la tarea"
-        />
-
-        <Text style={styles.label}>Descripción:</Text>
-        <TextInput
-            style={styles.input}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Ingrese la descripción de la tarea"
-            multiline
-        />
-
-        <Button title="Seleccionar fecha de inicio" onPress={() => setShowStartDatePicker(true)} />
-        {showStartDatePicker && (
-            <DateTimePicker
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={onChangeStartDate}
-            />
-        )}
-
-        <Button title="Seleccionar hora de inicio" onPress={() => setShowStartTimePicker(true)} />
-        {showStartTimePicker && (
-            <DateTimePicker
-                value={startTime}
-                mode="time"
-                display="default"
-                onChange={onChangeStartTime}
-            />
-        )}
-
-        <Button title="Seleccionar fecha de fin" onPress={() => setShowEndDatePicker(true)} />
-        {showEndDatePicker && (
-            <DateTimePicker
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={onChangeEndDate}
-            />
-        )}
-
-        <Button title="Seleccionar hora de fin" onPress={() => setShowEndTimePicker(true)} />
-        {showEndTimePicker && (
-            <DateTimePicker
-                value={endTime}
-                mode="time"
-                display="default"
-                onChange={onChangeEndTime}
-            />
-        )}
-
-        <Button title="Guardar Tarea" onPress={handleSave} />
-    </View>
-);
-};
-
-*/
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: "white",
     },
     label: {
         fontSize: 16,
@@ -309,14 +245,13 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: '100%', //nuevo
     },
-    // ... otros estilos que necesites
     saveButton: {
-        backgroundColor: '#504c94',
+        backgroundColor: '#d1b6fc',
         padding: 15,
         borderRadius: 10,
     },
     saveButtonText: {
-        color: 'white',
+        color: '#320a61',
         fontSize: 16,
         textAlign: 'center',
     },

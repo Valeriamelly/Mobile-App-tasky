@@ -28,7 +28,7 @@ const LoginScreen = () => {
     };
 
     axios
-      .post("http://192.168.18.50:8000/login", user)
+      .post("http://192.168.1.7:8000/login", user)
       .then((response) => {
         console.log(response);
         const token = response.data.token;
@@ -44,7 +44,7 @@ const LoginScreen = () => {
       })
       .catch((error) => {
         Alert.alert("Error en Login", error.response.data.error);
-        console.log(error);
+        console.log(error, error.response.data);
       });
   };
   
@@ -55,9 +55,9 @@ const LoginScreen = () => {
     >
       <View>
         <Image
-          style={{ width: 170, height: 100 }}
+          style={{ width: 300, height: 100, marginTop: 70  }}
           source={{
-            uri: "https://info.cegedim-healthcare.co.uk/hubfs/CHS_Tasks%20logo.png",
+            uri: "https://cdn.discordapp.com/attachments/1097713475654000671/1182544196679245824/zyro-image.png?ex=6585151b&is=6572a01b&hm=b7ec9adcdb7f717870af6fce4e3298cc6e53eccd3f2a348c836245ea6d861202&",
           }}
         />
       </View>
@@ -66,26 +66,26 @@ const LoginScreen = () => {
         <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 25,
               fontWeight: "bold",
               marginTop: 12,
-              color: "#041E42",
+              color: "#6127aa",
             }}
           >
-            Inicia Sesión en tu Cuenta
+            Inicia Sesión
           </Text>
         </View>
 
-        <View style={{ marginTop: 70 }}>
+        <View style={{ marginTop: 40 }}>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
-              marginTop: 30,
+              marginTop: 20,
             }}
           >
             <MaterialCommunityIcons
@@ -115,10 +115,10 @@ const LoginScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
-              marginTop: 30,
+              marginTop: 20,
             }}
           >
             <AntDesign
@@ -138,7 +138,7 @@ const LoginScreen = () => {
                 width: 300,
                 fontSize: password ? 16 : 16,
               }}
-              placeholder="Ingresa tu Contrasena"
+              placeholder="Ingresa tu Contraseña"
             />
           </View>
         </View>
@@ -157,13 +157,13 @@ const LoginScreen = () => {
           </Text>
         </View>
 
-        <View style={{ marginTop: 80 }} />
+        <View style={{ marginTop: 60 }} />
 
         <Pressable
           onPress={handleLogin}
           style={{
             width: 200,
-            backgroundColor: "#7743DB",
+            backgroundColor: "#d1b6fc",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",
@@ -173,7 +173,7 @@ const LoginScreen = () => {
           <Text
             style={{
               textAlign: "center",
-              color: "white",
+              color: "#320a61",
               fontSize: 16,
               fontWeight: "bold",
             }}
@@ -186,7 +186,7 @@ const LoginScreen = () => {
           style={{ marginTop: 15 }}
         >
           <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-            No tienes cuenta? Regístrate
+            ¿No tienes cuenta? Regístrate
           </Text>
         </Pressable>
       </KeyboardAvoidingView>

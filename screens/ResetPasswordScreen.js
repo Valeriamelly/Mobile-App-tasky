@@ -21,7 +21,7 @@ const ResetPasswordScreen = ( { navigation }) => {
           return;
       }
 
-      axios.post("http://192.168.18.50:8000/reset-password", { verificationToken, newPassword })
+      axios.post("http://192.168.1.7:8000/reset-password", { verificationToken, newPassword })
           .then(response => {
               Alert.alert("Éxito", "Tu contraseña ha sido restablecida.");
               navigation.navigate('Login');

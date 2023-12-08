@@ -31,13 +31,14 @@ const RegisterScreen = () => {
     };
   
   axios
-      .post("http://192.168.18.50:8000/register", user) 
+      .post("http://192.168.1.7:8000/register", user) 
       .then((response) => {
         console.log(response);
         Alert.alert(
           "Registro exitoso",
           "Ha sido registrado exitosamente"
         );
+        navigation.navigate('Login');
         setName("");
         setEmail("");
         setPassword("");
@@ -57,9 +58,9 @@ const RegisterScreen = () => {
     >
       <View>
         <Image
-          style={{ width: 170, height: 100 }}
+          style={{ width: 300, height: 100, marginTop: 70  }}
           source={{
-            uri: "https://info.cegedim-healthcare.co.uk/hubfs/CHS_Tasks%20logo.png",
+            uri: "https://cdn.discordapp.com/attachments/1097713475654000671/1182544196679245824/zyro-image.png?ex=6585151b&is=6572a01b&hm=b7ec9adcdb7f717870af6fce4e3298cc6e53eccd3f2a348c836245ea6d861202&",
           }}
         />
       </View>
@@ -68,23 +69,23 @@ const RegisterScreen = () => {
         <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 25,
               fontWeight: "bold",
               marginTop: 12,
-              color: "#041E42",
+              color: "#6127aa",
             }}
           >
             Registra tu cuenta
           </Text>
         </View>
 
-        <View style={{ marginTop: 70 }}>
+        <View style={{ marginTop: 10 }}>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
               marginTop: 30,
@@ -114,7 +115,7 @@ const RegisterScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
               marginTop: 30,
@@ -147,7 +148,7 @@ const RegisterScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
               marginTop: 30,
@@ -196,7 +197,7 @@ const RegisterScreen = () => {
         onPress={handleRegister}
           style={{
             width: 200,
-            backgroundColor: "#7743DB",
+            backgroundColor: "#d1b6fc",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",
@@ -206,7 +207,7 @@ const RegisterScreen = () => {
           <Text
             style={{
               textAlign: "center",
-              color: "white",
+              color: "#320a61",
               fontSize: 16,
               fontWeight: "bold",
             }}

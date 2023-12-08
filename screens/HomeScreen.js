@@ -12,7 +12,7 @@ const HomeScreen = ({ navigation }) => {
     const loadProjects = async () => {
         const userId = await AsyncStorage.getItem("userId");
 
-        axios.get(`http://192.168.18.50:8000/projects?userId=${userId}`)
+        axios.get(`http://192.168.1.7:8000/projects?userId=${userId}`)
             .then(response => {
                 setProjects(response.data);
             })
@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
 
     const deleteProject = (projectId) => {
         // Aquí llamarás a tu API para eliminar el proyecto
-        axios.delete(`http://192.168.18.50:8000/projects/${projectId}`)
+        axios.delete(`http://192.168.1.7:8000/projects/${projectId}`)
             .then(response => {
                 // Recargar los proyectos después de eliminar
                 loadProjects();
@@ -51,37 +51,45 @@ const HomeScreen = ({ navigation }) => {
         // Formatear fecha y hora de fin
         const formattedEndDate = item.endDate ? new Date(item.endDate).toLocaleString() : 'Sin fecha y hora';
 
+        
         return (
-            <View style={styles.projectItem}>
+            <View style={styles.taskCard}>
                 <TouchableOpacity
                     style={{ flex: 1 }}
                     onPress={() => navigation.navigate('ProjectScreen', { projectId: item._id })}
                 >
                     <Text style={styles.projectTitle}>{item.name}</Text>
                     <Text style={styles.projectDescription}>{item.description}</Text>
-                    <Text style={styles.projectDate}>Inicio: {formattedStartDate} | Fin: {formattedEndDate}</Text>
+                    <Text style={styles.projectDate}>Inicio: {formattedStartDate} </Text>
+                    <Text style={styles.projectDate}>Fin: {formattedEndDate}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
-                >
-                    <AntDesign name="edit" size={24} color="black" />
-                    
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteProject(item._id)}>
-                    <AntDesign name="delete" size={24} color="red" />
-                </TouchableOpacity>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity
+                        style={styles.editButton}  // Estilo para el botón de editar
+                        onPress={() => navigation.navigate('UpdateProject', { projectId: item._id, currentName: item.name, currentDescription: item.description })}
+                    >
+                        <AntDesign name="edit" size={24} color="gray" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        style={styles.deleteButton}  // Estilo para el botón de eliminar
+                        onPress={() => deleteProject(item._id)}>
+                        <AntDesign name="delete" size={24} color="gray" />
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     };
 
     return (
+        
         <View style={styles.container}>
             <FlatList
                 data={projects}
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={renderProject}
+                contentContainerStyle={styles.flatListContent}
             />
-
 
             <TouchableOpacity
                 onPress={() => navigation.navigate('AddProject')}
@@ -96,9 +104,14 @@ const styles = StyleSheet.create({
     projectDate: {
         fontSize: 14,
         color: 'grey',
+        marginTop: 5,     
     },
+    
+    flatListContent: {
+        paddingBottom: 20, // Ajusta el valor según sea necesario
+      },
     floatingButton: {
-        backgroundColor: '#007bff', // Puedes elegir el color que prefieras
+        backgroundColor: '#8139e4', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón
         height: 56,
         borderRadius: 28, // Para hacerlo circular
@@ -116,64 +129,48 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
-    container: {
-        flex: 1,
-        padding: 20,
-    },
     projectItem: {
-        padding: 20,
+        padding: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-    },
-    projectTitle: {
-        fontSize: 18,
-    },
-    menuContainer: {
-        position: 'absolute',
-        backgroundColor: 'white',
-        padding: 10,
-        backgroundColor: '#f0f0f0',
-    },
-    projectCard: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        
     },
     projectTitle: {
         fontSize: 18,
         fontWeight: 'bold',
+        marginTop: 10,     
     },
     projectDates: {
-        fontSize: 14,
+        fontSize: 16,
         color: 'grey',
+        
     },
-    tasksContainer: {
-        flex: 1,
-        marginTop: 20,
+    projectDescription: {
+        fontSize: 16,
+        marginTop: 5,
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 10,
-    },
+
     taskCard: {
-        backgroundColor: '#f5f5f5',
+        marginTop: 20,
         padding: 15,
         marginHorizontal: 10,
-        marginBottom: 10,
+        borderColor: '#89A1EF',
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        backgroundColor: '#f9f5ff', 
     },
     taskName: {
         fontSize: 18,
+ 
     },
     taskDate: {
         color: 'gray',
+        
+
     },
     addButton: {
         backgroundColor: '#008E97',
@@ -185,6 +182,27 @@ const styles = StyleSheet.create({
     addButtonText: {
         color: 'white',
         fontSize: 16,
+    },
+    iconContainer: {
+        flexDirection: 'row',  // Align icons horizontally
+        marginTop: 10,         // Add margin for separation
+        justifyContent: 'space-between',  // Add space between icons
+    },
+    editButton: {
+        //backgroundColor: '#17BEBB',  // Color turquesa para el botón de editar
+        padding: 10,
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    deleteButton: {
+        //backgroundColor: '#26547C',  // Color rojo para el botón de eliminar
+        padding: 10,
+        borderRadius: 5,
+    },
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: 'white',
     },
 });
 

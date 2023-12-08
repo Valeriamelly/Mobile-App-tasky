@@ -9,7 +9,7 @@ const ProjectScreen = ({ route, navigation }) => {
     const [projectData, setProjectData] = useState({ tasks: [], projectName: '' });
 
     const loadTasks = () => {
-        axios.get(`http://192.168.18.50:8000/projects/${projectId}/tasks`)
+        axios.get(`http://192.168.1.7:8000/projects/${projectId}/tasks`)
             .then(response => {
                 setProjectData(response.data);
             })
@@ -20,7 +20,7 @@ const ProjectScreen = ({ route, navigation }) => {
 
     // Función para eliminar una tarea específica
     const deleteTask = (taskId) => {
-        axios.delete(`http://192.168.18.50:8000/tasks/${taskId}`)
+        axios.delete(`http://192.168.1.7:8000/tasks/${taskId}`)
             .then(response => {
                 // Recargar las tareas después de eliminar
                 loadTasks(); // Asegúrate de tener una función que recargue las tareas
@@ -41,7 +41,7 @@ const ProjectScreen = ({ route, navigation }) => {
     }, [navigation, projectId]);
 
     const toggleTaskCompletion = (taskId, isCurrentlyCompleted) => {
-        axios.put(`http://192.168.18.50:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
+        axios.put(`http://192.168.1.7:8000/tasks/${taskId}`, { isCompleted: !isCurrentlyCompleted })
             .then(() => {
                 // Actualiza el estado para reflejar el cambio
                 setProjectData(prevData => {
@@ -69,30 +69,41 @@ const ProjectScreen = ({ route, navigation }) => {
                 <Text style={styles.taskDescription}>{item.description}</Text>
                 <Text style={styles.taskDate}>Inicio: {formattedStartDate}</Text>
                 <Text style={styles.taskDate}>Fin: {formattedEndDate}</Text>
-                <TouchableOpacity onPress={() => toggleTaskCompletion(item._id, item.isCompleted)}>
-                    <Text style={item.isCompleted ? styles.completed : styles.markComplete}>
-                        {item.isCompleted ? 'Done' : 'Marcar como Completada'}
-                    </Text>
+                <TouchableOpacity style={styles.checkButton} onPress={() => toggleTaskCompletion(item._id, item.isCompleted)}>
+                {item.isCompleted ? (
+                    <AntDesign name="checkcircle" size={30} color="#985af2" />
+                ) : (
+                    <AntDesign name="checkcircleo" size={30} color="grey" />
+                )}
+            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate('UpdateTask', {
+                        taskId: item._id,
+                        projectId: item.projectId,
+                        existingName: item.name,
+                        existingDescription: item.description,
+                        existingStartDate: item.startDate,
+                        existingEndDate: item.endDate
+                    })}
+                >
+                    <AntDesign name="edit" size={24} color="gray" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('UpdateTask', {
-                    taskId: item._id,
-                    projectId: item.projectId,
-                    existingName: item.name,
-                    existingDescription: item.description,
-                    existingStartDate: item.startDate,
-                    existingEndDate: item.endDate
-                })}>
-                    <AntDesign name="edit" size={24} color="black" />
+
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deleteTask(item._id)}
+                >
+                    <AntDesign name="delete" size={24} color="gray" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteTask(item._id)}>
-                    <AntDesign name="delete" size={24} color="red" />
-                </TouchableOpacity>
+            </View>
             </View>
         );
     };
     return (
         <View style={styles.container}>
-            <Text style={styles.projectTitle}>Proyecto {projectData.projectName}</Text>
+            <Text style={styles.projectTitle}>Proyecto: {projectData.projectName}</Text>
             <FlatList
                 data={projectData.tasks}
                 keyExtractor={(item) => item._id.toString()}
@@ -109,11 +120,13 @@ const ProjectScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     taskDate: {
-        fontSize: 14,
+        fontSize: 16,
         color: 'grey', // Puedes ajustar el estilo según tus preferencias
+        marginBottom: 10,
+
     },
     floatingButton: {
-        backgroundColor: '#007bff', // Puedes elegir el color que prefieras
+        backgroundColor: '#8139e4', // Puedes elegir el color que prefieras
         width: 56, // Tamaño del botón
         height: 56,
         borderRadius: 28, // Para hacerlo circular
@@ -134,6 +147,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: 'white',
     },
     projectTitle: {
         fontSize: 24,
@@ -141,36 +155,53 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     taskCard: {
-        backgroundColor: '#f5f5f5',
         padding: 15,
         marginBottom: 10,
+        marginTop: 20,
         borderRadius: 10,
+        borderColor: '#f1e9fe',  // Color del borde
+        borderWidth: 1,         // Ancho del borde
+        backgroundColor: '#f9f5ff',  // Color de fondo pastel (ajusta según tus preferencias)
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-    },
+      },
+      
     taskName: {
         fontSize: 18,
+        fontWeight: 'bold',
     },
     taskDescription: {
         fontSize: 16,
         color: 'grey', // Ajusta los estilos según tus preferencias
     },
-    taskDate: {
-        color: 'gray',
-    },
-    markComplete: {
-        color: 'blue',
+    buttonContainer: {
+        flexDirection: 'row',
         marginTop: 10,
-        fontWeight: 'bold'
+        justifyContent: 'space-between',
     },
-    completed: {
-        color: 'green', // o cualquier color que prefieras
-        marginTop: 10,
-        fontWeight: 'bold'
+    editButton: {
+        //backgroundColor: '#17BEBB',  
+        padding: 10,
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    deleteButton: {
+        //backgroundColor: '#26547C',  
+        padding: 10,
+        borderRadius: 5,
+    },
+    checkButton: {
+        position: 'absolute',  // Posiciona el icono de manera absoluta
+        top: 15,  // Ajusta la posición desde la parte superior
+        right: 15,
     }
+
 
 });
 

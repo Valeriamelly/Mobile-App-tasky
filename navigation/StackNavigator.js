@@ -9,6 +9,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons'; 
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProjectScreen from "../screens/ProjectScreen";
@@ -19,6 +20,7 @@ import UpdateProjectScreen from "../screens/UpdateProjectScreen";
 import UpdateTaskScreen from "../screens/UpdateTaskScreen";
 import RequestResetPasswordScreen from "../screens/RequestResetPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
+import CalendarScreen from "../screens/CalendarScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -31,31 +33,32 @@ const StackNavigator = () => {
           name="Home"
           component={HomeScreen}
           options={{
-            tabBarLabel: "Home",
-            tabBarLabelStyle: { color: "#008E97" },
+            tabBarLabel: "Inicio",
+            tabBarLabelStyle: { color: "#000000" },
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <Entypo name="home" size={30} color="#008E97" />
+                <Entypo name="home" size={30} color="#4e2083" />
 
               ) : (
-                <AntDesign name="home" size={30} color="black" />
+                <AntDesign name="home" size={30} color="#4e2083" />
               ),
           }}
         />
         <Tab.Screen
           name="Project"
-          component={ProjectScreen} //antes ibas HomeScreen
+          component={CalendarScreen} //antes ibas HomeScreen
           options={{
-            tabBarLabel: "Project",
-            tabBarLabelStyle: { color: "#008E97" },
+            tabBarLabel: "Calendario",
+            tabBarLabelStyle: { color: "#000000" },
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <FontAwesome5 name="tasks" size={30} color="#008E97" />
+                <FontAwesome5 name="calendar" size={30} color="#4e2083" />
 
               ) : (
-                <FontAwesome5 name="tasks" size={30} color="black" />
+                <FontAwesome name="calendar-o" size={30} color="#4e2083" />
+
               ),
           }}
         />
@@ -63,15 +66,15 @@ const StackNavigator = () => {
           name="Profile"
           component={ProfileScreen}
           options={{
-            tabBarLabel: "Profile",
-            tabBarLabelStyle: { color: "#008E97" },
+            tabBarLabel: "Perfil",
+            tabBarLabelStyle: { color: "#000000" },
             headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialIcons name="person" size={30} color="#008E97" />
+                <MaterialIcons name="person" size={30} color="#4e2083" />
 
               ) : (
-                <Ionicons name="person-outline" size={30} color="black" />
+                <Ionicons name="person-outline" size={30} color="#4e2083" />
               ),
           }}
         />
@@ -99,12 +102,16 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Main"
           component={BottomTabs}
-          options={{ headerShown: false }}
+          options={{ 
+            headerTitle: 'Tasky',
+          }}  
         />
         <Stack.Screen
           name="ProjectScreen"
           component={ProjectScreen}
-          options={{ headerShown: false }}
+          options={{ 
+            headerTitle: 'Proyectos',
+          }}
         />
         <Stack.Screen
           name="ProfileScreen"
@@ -114,21 +121,29 @@ const StackNavigator = () => {
         <Stack.Screen
           name="AddProject"
           component={AddProjectScreen}
-          options={{ headerShown: false}} // Configura las opciones según tus preferencias
+          options={{ 
+            headerTitle: 'Añadir Proyectos',
+          }}  
         />
         <Stack.Screen 
           name="UpdateProject" 
           component={UpdateProjectScreen} 
-          options={{ headerShown: false }} // Configura las opciones según tus preferencias
+          options={{ 
+            headerTitle: 'Proyectos',
+          }}  
         />
         <Stack.Screen 
           name="UpdateTask" 
           component={UpdateTaskScreen} 
-          options={{ headerShown: false }} // Configura las opciones según tus preferencias
+          options={{ 
+            headerTitle: 'Tareas',
+          }}  
         />
         <Stack.Screen 
         name="AddTask" 
         component={AddTaskScreen} 
+        options={{ headerTitle: 'Añadir Tarea',
+       }}  
         // Opciones adicionales como `options` si son necesarias
       />
       <Stack.Screen
@@ -139,6 +154,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="ResetPassword"
           component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CalendarScreen"
+          component={CalendarScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

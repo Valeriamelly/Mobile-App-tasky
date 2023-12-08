@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb+srv://chaparro:Miguelyjeni1@cluster0.wibaw6v.mongodb.net/", {
+mongoose.connect("mongodb+srv://valefat:valefat@cluster0.3qco7dw.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -600,3 +600,23 @@ app.post('/reset-password', async (req, res) => {
         res.status(500).json({ message: 'Error al procesar la solicitud.' });
     }
 });
+
+
+// Nueva ruta para obtener tareas por ID de usuario
+app.get('/tasks/user/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      // Primero, encontrar todos los proyectos del usuario
+      const projects = await Project.find({ userId: userId });
+      const projectIds = projects.map(project => project._id);
+  
+      // Luego, encontrar todas las tareas asociadas a esos proyectos
+      const tasks = await Task.find({ projectId: { $in: projectIds } });
+      res.status(200).json({ tasks: tasks });
+    } catch (error) {
+      console.error('Error al obtener las tareas:', error);
+      res.status(500).json({ message: 'Error al obtener las tareas' });
+    }
+  });
+  
+  

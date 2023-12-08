@@ -20,7 +20,7 @@ const RequestResetPasswordScreen = ({ navigation }) => {
   // Función para solicitar restablecimiento de contraseña
   const handleRequestResetPassword = () => {
     axios
-      .post("http://192.168.18.50:8000/request-reset-password", { email })
+      .post("http://192.168.1.7:8000/request-reset-password", { email })
       .then((response) => {
         console.log(response);
         Alert.alert(

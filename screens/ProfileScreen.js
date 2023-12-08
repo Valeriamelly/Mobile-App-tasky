@@ -35,7 +35,7 @@ const ProfileScreen = () => {
         return;
       }
       // backend valida el token y devuelve la información del usuario
-      const response = await axios.get("http://192.168.18.50:8000/profile", {
+      const response = await axios.get("http://192.168.1.7:8000/profile", {
         headers: {
           //Esto es esencial para validar y permitir el acceso a la información del perfil.
           Authorization: `Bearer ${token}`, // Enviar el token en el header 
@@ -45,7 +45,7 @@ const ProfileScreen = () => {
       setName(name);
       setEmail(email);
       setPhoneNumber(phoneNumber);
-      setGreeting(`Tasky de ${name}!`);
+      setGreeting(`Hola ${name}!`);
 
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
@@ -77,7 +77,7 @@ const ProfileScreen = () => {
 
       // Realizar la solicitud para actualizar los datos del usuario
       await axios.put(
-        "http://192.168.18.50:8000/profile",
+        "http://192.168.1.7:8000/profile",
         {
           name,
           password,
@@ -93,7 +93,7 @@ const ProfileScreen = () => {
         "Tu perfil ha sido actualizado con éxito."
       );
       // Actualiza el saludo con el nuevo nombre
-      setGreeting(`Tasky de ${name}!`);
+      setGreeting(`Hola ${name}!`);
       setPassword(""); // Limpiar el campo de contraseña después de la actualización
       setConfirmPassword(""); // Limpiar el campo de confirmación de contraseña también
 
@@ -186,11 +186,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
+    color: "#6127aa",
   },
   input: {
     height: 40,
@@ -198,28 +200,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 5,
-    width: "50%", // o el ancho que desees
+    width: "70%", // o el ancho que desees
   },
-  label: {},
   logoutButton: {
-    backgroundColor: "#504c94",
+    backgroundColor: "#d1b6fc",
     padding: 20,
     borderRadius: 10,
     marginTop: 20,
   },
   logoutButtonText: {
-    color: "white",
+    color: "#320a61",
     fontSize: 16,
   },
   updateButton: {
-    backgroundColor: "#504c94",
+    backgroundColor: "#d1b6fc",
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
   },
   updateButtonText: {
     textAlign: "center",
-    color: "white",
+    color: "#320a61",
     fontSize: 16,
   },
 });
