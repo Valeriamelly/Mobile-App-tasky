@@ -69,10 +69,11 @@ const RequestResetPasswordScreen = ({ navigation }) => {
         <View style={{ alignItems: "center" }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 25,
               fontWeight: "bold",
               marginTop: 12,
-              color: "#041E42",
+              color: "#6127aa",
+              
             }}
           >
             Solicitar Restablecimiento de Contraseña

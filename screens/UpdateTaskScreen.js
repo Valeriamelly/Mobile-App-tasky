@@ -33,7 +33,6 @@ const UpdateTaskScreen = ({ navigation, route }) => {
             return false;
         }
         // Combina la fecha y la hora de inicio para la validación
-        // Combina la fecha y la hora de inicio para la validación
         const combinedStartDateTime = moment.tz({
             year: startDate.getFullYear(),
             month: startDate.getMonth(),
