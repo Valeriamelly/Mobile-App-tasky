@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { Calendar, Agenda } from 'react-native-calendars';
+import { Agenda } from 'react-native-calendars';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment-timezone';
@@ -13,20 +13,11 @@ const CalendarView = () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
       const response = await axios.get(`http://192.168.18.50:8000/tasks/user/${userId}`);
-      console.log(response.data);
       const fetchedTasks = response.data;
 
-      // Procesar las tareas para adaptarlas al formato requerido por Agenda
-      const formattedTasks = fetchedTasks.reduce((acc, task) => {
-        const startDate = moment.utc(task.startDate).format('YYYY-MM-DD'); // Ajustar la zona horaria según sea necesario
-        if (!acc[startDate]) {
-          acc[startDate] = [];
-        }
-        acc[startDate].push({ name: task.name, height: 50 }); // Ajusta esto según sea necesario
-        return acc;
-      }, {});
+      const agendaItems = processTasksForAgenda(fetchedTasks);
+      setItems(agendaItems);
 
-      setItems(formattedTasks);
       const newMarkedDates = processTasksForMarking(fetchedTasks);
       setMarkedDates(newMarkedDates);
     } catch (error) {
@@ -52,6 +43,33 @@ const CalendarView = () => {
       />
     </View>
   );
+};
+
+const processTasksForAgenda = (tasks) => {
+  const agendaItems = {};
+
+  tasks.forEach((task) => {
+    const startDate = moment.utc(task.startDate).format('YYYY-MM-DD');
+    const endDate = moment.utc(task.endDate).format('YYYY-MM-DD');
+
+    let currentDate = moment(startDate);
+
+    while (currentDate <= moment(endDate)) {
+      const dateStr = currentDate.format('YYYY-MM-DD');
+
+      // Asegurarse de que solo se añada la tarea al día específico
+      if (!agendaItems[dateStr]) {
+        agendaItems[dateStr] = [{ name: task.name, height: 50 }];
+      } else {
+        // Si ya existen tareas para ese día, añadir esta tarea también
+        agendaItems[dateStr].push({ name: task.name, height: 50 });
+      }
+
+      currentDate.add(1, 'day');
+    }
+  });
+
+  return agendaItems;
 };
 
 const processTasksForMarking = (tasks) => {
