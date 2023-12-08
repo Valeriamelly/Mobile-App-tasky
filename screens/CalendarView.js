@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment-timezone';
 
 const CalendarView = ({ navigation }) => {
+  const [allTasks, setAllTasks] = useState({}); // Almacenar todas las tareas aquí
   const [items, setItems] = useState({});
   const [markedDates, setMarkedDates] = useState({});
 
@@ -20,23 +21,47 @@ const CalendarView = ({ navigation }) => {
 
       const newMarkedDates = processTasksForMarking(fetchedTasks);
       setMarkedDates(newMarkedDates);
+      setAllTasks(fetchedTasks); // Actualizar allTasks con las tareas obtenidas
     } catch (error) {
       console.error('Error al obtener las tareas:', error);
     }
   };
 
   useEffect(() => {
-    // Cargar tareas cuando el componente se monta
     fetchTasks();
-
-    // Listener para recargar tareas cuando la pantalla gane foco
     const unsubscribe = navigation.addListener('focus', () => {
       fetchTasks();
     });
-
-    // Función de limpieza para desuscribirse del listener
     return () => unsubscribe();
   }, [navigation]);
+
+  // Función para manejar la selección de un día en el calendario
+  const onDaySelected = (day) => {
+    const selectedDate = day.dateString;
+    const tasksForSelectedDay = filterTasksForDay(selectedDate);
+    setItems(tasksForSelectedDay);
+  };
+
+  // Función para filtrar las tareas para un día específico
+  const filterTasksForDay = (selectedDate) => {
+    let filteredItems = {};
+  
+    allTasks.forEach((task) => {
+      const startDate = moment.utc(task.startDate).format('YYYY-MM-DD');
+      const endDate = moment.utc(task.endDate).format('YYYY-MM-DD');
+  
+      if (startDate <= selectedDate && endDate >= selectedDate) {
+        // Añadir la tarea si el día seleccionado está dentro del rango de la tarea
+        if (!filteredItems[selectedDate]) {
+          filteredItems[selectedDate] = [{ name: task.name, height: 50 }];
+        } else {
+          filteredItems[selectedDate].push({ name: task.name, height: 50 });
+        }
+      }
+    });
+  
+    return filteredItems;
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -44,11 +69,13 @@ const CalendarView = ({ navigation }) => {
         items={items}
         markedDates={markedDates}
         markingType={'period'}
+        onDayPress={onDaySelected} // Agregar aquí el manejador
         renderItem={(item) => (
           <View style={styles.item}>
             <Text style={styles.itemText}>{item.name}</Text>
           </View>
         )}
+        // ... otros props
       />
     </View>
   );
