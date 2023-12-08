@@ -66,10 +66,11 @@ const RegisterScreen = () => {
         setPassword("");
       })
       .catch((error) => {
-        Alert.alert(
-          "Error al registrarse",
-          "Un error ocurrió mientras se registraba"
-        );
+        if (error.response && error.response.data && error.response.data.message) {
+          Alert.alert("Error al registrarse", error.response.data.message);
+        } else {
+          Alert.alert("Error al registrarse", "Un error ocurrió mientras se registraba");
+        }
         console.log("registro fallido", error);
       });
   };

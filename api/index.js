@@ -56,7 +56,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
         from: '"Tasky G2" <grupitogpt4@gmail.com>',
         to: email,
         subject: "Verificación de Email",
-        text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`,
+        text: `Por favor click al siguiente enlace para verificar tu email: http://192.168.1.7:8000/verify/${verificationToken}`,
     };
     try {
         await transporter.sendMail(mailOptions);

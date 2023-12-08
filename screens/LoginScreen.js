@@ -55,7 +55,7 @@ const LoginScreen = () => {
         navigation.replace("Main");
       })
       .catch((error) => {
-        Alert.alert("Error en Inicio de Sesión", error.response.data.error);
+        Alert.alert("Error en Inicio de Sesión", error.response.data.message);
         console.log(error, error.response.data);
       });
   };
