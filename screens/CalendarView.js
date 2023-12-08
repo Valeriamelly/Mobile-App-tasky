@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment-timezone';
 
-const CalendarView = () => {
+const CalendarView = ({ navigation }) => {
   const [items, setItems] = useState({});
   const [markedDates, setMarkedDates] = useState({});
 
@@ -26,8 +26,17 @@ const CalendarView = () => {
   };
 
   useEffect(() => {
+    // Cargar tareas cuando el componente se monta
     fetchTasks();
-  }, []);
+
+    // Listener para recargar tareas cuando la pantalla gane foco
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchTasks();
+    });
+
+    // Función de limpieza para desuscribirse del listener
+    return () => unsubscribe();
+  }, [navigation]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -44,6 +53,7 @@ const CalendarView = () => {
     </View>
   );
 };
+
 
 const processTasksForAgenda = (tasks) => {
   const agendaItems = {};
@@ -76,29 +86,43 @@ const processTasksForMarking = (tasks) => {
   const markedDates = {};
 
   tasks.forEach((task) => {
-    const startDate = moment.utc(task.startDate).format('YYYY-MM-DD'); // Ajustar la zona horaria según sea necesario
-    const endDate = moment.utc(task.endDate).format('YYYY-MM-DD'); // Ajustar la zona horaria según sea necesario
+    const startDate = moment.utc(task.startDate).format('YYYY-MM-DD');
+    const endDate = moment.utc(task.endDate).format('YYYY-MM-DD');
 
     if (startDate === endDate) {
-      // Tarea de un solo día
-      markedDates[startDate] = { marked: true, dotColor: 'red' };
+      // Tarea puntual
+      if (!markedDates[startDate]) {
+        markedDates[startDate] = { marked: true, dotColor: 'red' };
+      } else {
+        // Añadir marcado de punto a una fecha ya marcada como rango
+        markedDates[startDate] = { ...markedDates[startDate], marked: true, dotColor: 'red' };
+      }
     } else {
-      // Tarea de varios días
+      // Tarea de rango
       let currentDate = moment(startDate);
       const end = moment(endDate);
 
       while (currentDate <= end) {
         const dateStr = currentDate.format('YYYY-MM-DD');
 
-        if (currentDate.isSame(startDate, 'day')) {
-          // Primer día del rango
-          markedDates[dateStr] = { startingDay: true, color: 'blue', textColor: 'white' };
-        } else if (currentDate.isSame(end, 'day')) {
-          // Último día del rango
-          markedDates[dateStr] = { endingDay: true, color: 'blue', textColor: 'white' };
+        if (markedDates[dateStr] && markedDates[dateStr].marked) {
+          // Si ya existe un marcado de punto en esta fecha, combinarlo con el marcado de rango
+          const existingMark = markedDates[dateStr];
+          markedDates[dateStr] = {
+            ...existingMark,
+            startingDay: currentDate.isSame(startDate, 'day') || existingMark.startingDay,
+            endingDay: currentDate.isSame(end, 'day') || existingMark.endingDay,
+            color: 'blue',
+            textColor: 'white'
+          };
         } else {
-          // Días intermedios
-          markedDates[dateStr] = { color: 'blue', textColor: 'white' };
+          // Marcado de rango sin punto existente
+          markedDates[dateStr] = {
+            startingDay: currentDate.isSame(startDate, 'day'),
+            endingDay: currentDate.isSame(end, 'day'),
+            color: 'blue',
+            textColor: 'white'
+          };
         }
         currentDate.add(1, 'day');
       }
