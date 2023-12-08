@@ -21,13 +21,25 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  const validateInput = () => {
+    if (!email.trim() ||  !password.trim()) {
+      Alert.alert("Error", "Por favor, rellena todos los campos.");
+      return false;
+    }
+    return true;
+  };
   const handleLogin = () => {
+  
     const user = {
       email: email,
       password: password,
     };
+    
+    if (!validateInput()) {
+      return;
+    }
 
-    axios
+  axios
       .post("http://192.168.1.7:8000/login", user)
       .then((response) => {
         console.log(response);
@@ -43,7 +55,7 @@ const LoginScreen = () => {
         navigation.replace("Main");
       })
       .catch((error) => {
-        Alert.alert("Error en Login", error.response.data.error);
+        Alert.alert("Error en Inicio de Sesión", error.response.data.error);
         console.log(error, error.response.data);
       });
   };

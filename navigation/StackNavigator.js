@@ -20,7 +20,7 @@ import UpdateProjectScreen from "../screens/UpdateProjectScreen";
 import UpdateTaskScreen from "../screens/UpdateTaskScreen";
 import RequestResetPasswordScreen from "../screens/RequestResetPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
-import CalendarScreen from "../screens/CalendarScreen";
+import CalendarView from "../screens/CalendarView";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -46,8 +46,8 @@ const StackNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="Project"
-          component={CalendarScreen} //antes ibas HomeScreen
+          name="CalendarView"
+          component={CalendarView} //antes ibas HomeScreen
           options={{
             tabBarLabel: "Calendario",
             tabBarLabelStyle: { color: "#000000" },
@@ -157,8 +157,8 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="CalendarScreen"
-          component={CalendarScreen}
+          name="CalendarView"
+          component={CalendarView}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

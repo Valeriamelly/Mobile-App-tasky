@@ -17,8 +17,19 @@ import axios from "axios";
 const RequestResetPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
 
+  const validateInput = () => {
+    if (!email.trim()) {
+      Alert.alert("Error", "Por favor, rellena todos los campos.");
+      return false;
+    }
+    return true;
+  };
+  
   // Función para solicitar restablecimiento de contraseña
   const handleRequestResetPassword = () => {
+    if (!validateInput()) {
+      return;
+    }
     axios
       .post("http://192.168.1.7:8000/request-reset-password", { email })
       .then((response) => {
@@ -47,9 +58,9 @@ const RequestResetPasswordScreen = ({ navigation }) => {
     >
       <View>
         <Image
-          style={{ width: 170, height: 100 }}
+          style={{ width: 300, height: 100, marginTop: 70  }}
           source={{
-            uri: "https://info.cegedim-healthcare.co.uk/hubfs/CHS_Tasks%20logo.png",
+            uri: "https://cdn.discordapp.com/attachments/1097713475654000671/1182544196679245824/zyro-image.png?ex=6585151b&is=6572a01b&hm=b7ec9adcdb7f717870af6fce4e3298cc6e53eccd3f2a348c836245ea6d861202&",
           }}
         />
       </View>
@@ -74,7 +85,7 @@ const RequestResetPasswordScreen = ({ navigation }) => {
               flexDirection: "row",
               alignItems: "center",
               gap: 5,
-              backgroundColor: "#D0D0D0",
+              backgroundColor: "#f1e9fe",
               paddingVertical: 5,
               borderRadius: 5,
               marginTop: 30,
@@ -105,7 +116,7 @@ const RequestResetPasswordScreen = ({ navigation }) => {
           onPress={handleRequestResetPassword}
           style={{
             width: 200,
-            backgroundColor: "#7743DB",
+            backgroundColor: "#d1b6fc",
             borderRadius: 6,
             marginLeft: "auto",
             marginRight: "auto",
@@ -116,7 +127,7 @@ const RequestResetPasswordScreen = ({ navigation }) => {
           <Text
             style={{
               textAlign: "center",
-              color: "white",
+              color: "#320a61",
               fontSize: 16,
               fontWeight: "bold",
             }}

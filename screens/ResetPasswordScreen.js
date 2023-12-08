@@ -11,35 +11,52 @@ import {
 } from "react-native";
 import axios from "axios";
 
-const ResetPasswordScreen = ( { navigation }) => {
-    const [verificationToken, setVerificationToken] = useState(""); // Cambiado de verificationToken a verificationToken
-    const [newPassword, setNewPassword] = useState("");
+const ResetPasswordScreen = ({ navigation }) => {
+  const [verificationToken, setVerificationToken] = useState(""); // Cambiado de verificationToken a verificationToken
+  const [newPassword, setNewPassword] = useState("");
 
-    const handleResetPassword = () => {
-      if (!verificationToken || !newPassword) {
-          Alert.alert("Error", "Todos los campos son obligatorios.");
-          return;
-      }
+  const handleResetPassword = () => {
+    if (!verificationToken || !newPassword) {
+      Alert.alert("Error", "Todos los campos son obligatorios.");
+      return;
+    }
+    if (newPassword.length < 8) {
+      Alert.alert("Error", "Su contraseña debe ser mayor de 8 caracteres");
+      return false;
+    }
 
-      axios.post("http://192.168.1.7:8000/reset-password", { verificationToken, newPassword })
-          .then(response => {
-              Alert.alert("Éxito", "Tu contraseña ha sido restablecida.");
-              navigation.navigate('Login');
-          })
-          .catch(error => {
-              Alert.alert("Error", "Código de verificación inválido o expirado.");
-          });
+    axios
+      .post("http://192.168.1.7:8000/reset-password", {
+        verificationToken,
+        newPassword,
+      })
+      .then((response) => {
+        Alert.alert("Éxito", "Tu contraseña ha sido restablecida.");
+        navigation.navigate("Login");
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Código de verificación inválido o expirado.");
+      });
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
+    >
       <View style={{ alignItems: "center" }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginTop: 12, color: "#041E42" }}>
+        <Text
+          style={{
+            fontSize: 25,
+            fontWeight: "bold",
+            marginTop: 70,
+            color: "#6127aa",
+          }}
+        >
           Restablecer Contraseña
         </Text>
       </View>
 
-      <View style={{ marginTop: 70 }}>
+      <View style={{ marginTop: 40 }}>
         {/* Ingresa el código de verificación */}
         <TextInput
           value={verificationToken}
@@ -48,8 +65,9 @@ const ResetPasswordScreen = ( { navigation }) => {
             color: "gray",
             marginVertical: 10,
             width: 300,
+            height: 50,
             fontSize: verificationToken ? 16 : 16,
-            backgroundColor: "#D0D0D0",
+            backgroundColor: "#f1e9fe",
             paddingVertical: 5,
             borderRadius: 5,
           }}
@@ -64,10 +82,12 @@ const ResetPasswordScreen = ( { navigation }) => {
             color: "gray",
             marginVertical: 10,
             width: 300,
+            height: 50,
             fontSize: newPassword ? 16 : 16,
-            backgroundColor: "#D0D0D0",
+            backgroundColor: "#f1e9fe",
             paddingVertical: 5,
             borderRadius: 5,
+            marginTop: 20,
           }}
           secureTextEntry={true}
           placeholder="Nueva Contraseña"
@@ -78,7 +98,7 @@ const ResetPasswordScreen = ( { navigation }) => {
         onPress={handleResetPassword}
         style={{
           width: 200,
-          backgroundColor: "#7743DB",
+          backgroundColor: "#d1b6fc",
           borderRadius: 6,
           marginLeft: "auto",
           marginRight: "auto",
@@ -86,18 +106,22 @@ const ResetPasswordScreen = ( { navigation }) => {
           marginTop: 20,
         }}
       >
-        <Text style={{ textAlign: "center", color: "white", fontSize: 16, fontWeight: "bold" }}>
+        <Text
+          style={{
+            textAlign: "center",
+            color: "#320a61",
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
+        >
           Restablecer Contraseña
         </Text>
       </Pressable>
-      <Pressable
-          onPress={() => navigation.goBack()}
-          style={{ marginTop: 15 }}
-        >
-          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-            Volver 
-          </Text>
-        </Pressable>
+      <Pressable onPress={() => navigation.goBack()} style={{ marginTop: 15 }}>
+        <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+          Volver
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 };

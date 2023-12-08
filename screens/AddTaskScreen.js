@@ -31,7 +31,6 @@ const AddTaskScreen = ({ navigation, route }) => {
             return false;
         }
         // Combina la fecha y la hora de inicio para la validación
-        // Combina la fecha y la hora de inicio para la validación
         const combinedStartDateTime = moment.tz({
             year: startDate.getFullYear(),
             month: startDate.getMonth(),
@@ -42,7 +41,7 @@ const AddTaskScreen = ({ navigation, route }) => {
 
         // Comprueba si la fecha y hora combinadas de inicio son anteriores a la fecha y hora actuales
         if (combinedStartDateTime.isBefore(moment(), 'minute')) {
-            Alert.alert("Error", "La fecha y hora de inicio deben ser iguales o mayores a la fecha y hora actuales.");
+            Alert.alert("Error", "La fecha y hora de inicio deben ser iguales o mayores a la fecha y hora actual.");
             return false;
         }
 

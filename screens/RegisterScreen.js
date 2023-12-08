@@ -22,6 +22,24 @@ const RegisterScreen = () => {
   const [name, setName] = useState("");
   const navigation = useNavigation();
   
+  const validateInput = () => {
+    if (!name.trim() || !email.trim()|| !password.trim()) {
+      Alert.alert("Error", "Por favor, rellena todos los campos.");
+      return false;
+  }
+    if (password.length <8) {
+        Alert.alert("Error", "Su contraseña debe ser mayor de 8 caracteres");
+        return false;
+    }
+    // Validar el formato del correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        Alert.alert("Error", "Ingrese una dirección de correo electrónico válida");
+        return false;
+    }
+    return true;
+  };
   //funcion que permite registrar con los campos indicados 
   const handleRegister = () => {
     const user = {
@@ -29,6 +47,10 @@ const RegisterScreen = () => {
       email: email,
       password: password,
     };
+
+    if (!validateInput()) {
+      return;
+  }
   
   axios
       .post("http://192.168.1.7:8000/register", user) 
@@ -58,7 +80,7 @@ const RegisterScreen = () => {
     >
       <View>
         <Image
-          style={{ width: 300, height: 100, marginTop: 70  }}
+          style={{ width: 300, height: 100, marginTop: 70 }}
           source={{
             uri: "https://cdn.discordapp.com/attachments/1097713475654000671/1182544196679245824/zyro-image.png?ex=6585151b&is=6572a01b&hm=b7ec9adcdb7f717870af6fce4e3298cc6e53eccd3f2a348c836245ea6d861202&",
           }}
@@ -184,14 +206,10 @@ const RegisterScreen = () => {
             justifyContent: "space-between",
           }}
         >
-          <Text>Recuérdame</Text>
 
-          <Text style={{ color: "#007FFF", fontWeight: "500" }}>
-            Olvidé mi contraseña
-          </Text>
         </View>
 
-        <View style={{ marginTop: 80 }} />
+        <View style={{ marginTop: 60 }} />
 
         <Pressable
         onPress={handleRegister}

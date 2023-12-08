@@ -23,7 +23,20 @@ const ProfileScreen = () => {
   const [isFetching, setIsFetching] = useState(true); // Para manejar la carga de datos
   const [greeting, setGreeting] = useState(""); // Saludo con el nombre
 
+  const validateInput = () => {
+    if (password.length <8 && confirmPassword.length <8 ) {
+        Alert.alert("Error", "Su contraseña debe ser mayor de 8 caracteres");
+        return false;
+    }
+    // Validar que la contraseña y la confirmación sean iguales
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Las contraseñas no coinciden");
+      return false;
+    }
 
+    return true;
+  };
+  
   // Esta función obtendrá los datos del perfil del usuario
   const fetchUserProfile = async () => {
     setIsFetching(true);
@@ -97,12 +110,12 @@ const ProfileScreen = () => {
       setPassword(""); // Limpiar el campo de contraseña después de la actualización
       setConfirmPassword(""); // Limpiar el campo de confirmación de contraseña también
 
-
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al actualizar tu perfil.");
       console.error("Error al actualizar el perfil:", error);
     } finally {
       setIsLoading(false);
+      
     }
   };
 

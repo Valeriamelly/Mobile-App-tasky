@@ -7,8 +7,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10; // Puedes aumentar el número de rondas para un hash más seguro
 const twilio = require('twilio');
 const accountSid = 'AC9f5c5a71cf0e0a171ffb4e4329341b4c';
-const authToken = '396c661ab35f9bd94fd180037d5b4697';
-
+const authToken = 'acbc02bd2afc865c8d94a3133a2fe518';
 
 const client = new twilio(accountSid, authToken);
 
@@ -56,7 +55,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     const mailOptions = {
         from: '"Tasky G2" <grupitogpt4@gmail.com>',
         to: email,
-        subject: "Email Verification",
+        subject: "Verificación de Email",
         text: `Por favor click al siguiente enlace para verificar tu email: http://localhost:8000/verify/${verificationToken}`,
     };
     try {
@@ -240,6 +239,27 @@ app.post('/add-task', async (req, res) => {
     }
 });
 
+//Ruta para obtener las tareas de un usuario
+app.get('/tasks/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Buscar los proyectos del usuario
+        const projects = await Project.find({ userId: userId });
+
+        // Obtener los IDs de los proyectos
+        const projectIds = projects.map(project => project._id);
+
+        // Buscar las tareas de los proyectos del usuario
+        const tasks = await Task.find({ projectId: { $in: projectIds } });
+
+        res.status(200).json(tasks);
+    } catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).json({ message: 'Error al obtener las tareas' });
+    }
+});
+
 
 app.get('/projects/:projectId/tasks', async (req, res) => {
     try {
@@ -267,7 +287,7 @@ const enviarRecordatorioTarea = async (tarea) => {
     console.log("estoy aqui");
     const horaActual = new Date();
     const horaFinTarea = new Date(tarea.endDate);
-
+    
     // Si la tarea ya está completada, no enviar recordatorio
     if (tarea.isCompleted) return;
 
